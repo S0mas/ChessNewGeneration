@@ -17,16 +17,24 @@ public:
 	}
 
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
+	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept = 0;
+	void attack(const Position& destPosition) noexcept {
+		if (position_ != destPosition && isConsistentWithAttackRules(destPosition))
+			position_ = destPosition;
+	}
 	void move(const Position& destPosition) noexcept {
 		if (position_ != destPosition && isConsistentWithMoveRules(destPosition))
 			position_ = destPosition;
 	}
 };
 
-class King final : public Piece {
+class King : public Piece {
 public:
 	constexpr explicit King(const Position& pos) noexcept : Piece(pos) {}
-	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
+	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept override {
 		return std::abs(position_.column_ - destPosition.column_) <= 1 && std::abs(position_.row_ - destPosition.row_) <= 1;
+	}
+	bool isConsistentWithAttackRules(const Position& destPosition) const noexcept override {
+		return isConsistentWithMoveRules(destPosition);
 	}
 };
