@@ -1,19 +1,13 @@
 #include "pch.h"
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <isolator.h>
 #include "../ChessNewGeneration/Pieces.h"
 
-using ::testing::AtLeast;
-
-class MockKing : public King {
+class KingTests : public ::testing::Test {
 public:
-	MockKing(const Position& pos) : King(pos) {}
-
-	MOCK_CONST_METHOD1(isConsistentWithMoveRules, bool(const Position&));
-	MOCK_CONST_METHOD1(isConsistentWithAttackRules, bool(const Position&));
-	MOCK_METHOD1(move, void(const Position&) noexcept);
-	MOCK_METHOD1(attack, void(const Position&) noexcept);
-
+	void TearDown() final {
+		ISOLATOR_CLEANUP();
+	}
 };
 
 TEST(KingTests, validMoves) {
@@ -89,11 +83,29 @@ TEST(KingTests, invalidMoves) {
 	EXPECT_EQ(king.getPosition(), oldPosition);
 }
 
-TEST(KingTests, attackTests) {
-	MockKing king(Position("C4"));
-	Position newPosition("A3");
+TEST(KingTests, moveUsesMoveRulesTests) {
+	auto king = std::make_unique<King>(Position("C4"));
+	const Position newPosition("B3");
 
-	EXPECT_CALL(king, isConsistentWithMoveRules(newPosition)).Times(1);
-	king.attack(newPosition);
-	EXPECT_EQ(king.getPosition(), newPosition);
+	WHEN_CALLED(king->isConsistentWithMoveRules(newPosition)).Return(true);
+	king->move(newPosition);
+	ASSERT_WAS_CALLED(king->isConsistentWithMoveRules(newPosition));
+}
+
+TEST(KingTests, attackUsesMoveRulesTests) {
+	auto king = std::make_unique<King>(Position("C4"));
+	const Position newPosition("B3");
+
+	WHEN_CALLED(king->isConsistentWithAttackRules(newPosition)).Return(true);
+	king->attack(newPosition);
+	ASSERT_WAS_CALLED(king->isConsistentWithAttackRules(newPosition));
+}
+
+TEST(KingTests, attackRulesUsesMoveRules) {
+	auto king = std::make_unique<King>(Position("C4"));
+	const Position newPosition("B3");
+
+	WHEN_CALLED(king->isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = king->isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(king->isConsistentWithMoveRules(newPosition));
 }
