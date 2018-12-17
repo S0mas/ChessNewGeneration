@@ -1,11 +1,13 @@
 #pragma once
 #include "Position.h"
+#include "Playerh.h"
 
 class Piece {
 protected:
 	Position position_;
+	const Player owner_;
 public:
-	constexpr explicit Piece(const Position& pos) noexcept : position_(pos) {}
+	constexpr explicit Piece(const Position& pos, const Player owner = Player::White) noexcept : position_(pos), owner_(owner) {}
 	Piece(const Piece& original) noexcept = default;
 	Piece(Piece&& original) noexcept = default;
 	Piece& operator=(const Piece& original) noexcept = default;
@@ -14,6 +16,10 @@ public:
 
 	auto getPosition() const noexcept {
 		return position_;
+	}
+
+	auto getOwner() const noexcept {
+		return owner_;
 	}
 
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
@@ -35,7 +41,7 @@ public:
 
 class King final : public Piece {
 public:
-	constexpr explicit King(const Position& pos) noexcept : Piece(pos) {}
+	constexpr explicit King(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) <= 1 && std::abs(position_.row_ - destPosition.row_) <= 1;
 	}
@@ -43,7 +49,7 @@ public:
 
 class Queen final : public Piece {
 public:
-	constexpr explicit Queen(const Position& pos) noexcept : Piece(pos) {}
+	constexpr explicit Queen(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_ ||
 			std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
@@ -52,7 +58,7 @@ public:
 
 class Rock final : public Piece {
 public:
-	constexpr explicit Rock(const Position& pos) noexcept : Piece(pos) {}
+	constexpr explicit Rock(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_;
 	}
@@ -60,7 +66,7 @@ public:
 
 class Bishop final : public Piece {
 public:
-	constexpr explicit Bishop(const Position& pos) noexcept : Piece(pos) {}
+	constexpr explicit Bishop(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
 	}
@@ -68,7 +74,7 @@ public:
 
 class Knight final : public Piece {
 public:
-	constexpr explicit Knight(const Position& pos) noexcept : Piece(pos) {}
+	constexpr explicit Knight(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) == 2 && std::abs(position_.row_ - destPosition.row_) == 1 ||
 			std::abs(position_.column_ - destPosition.column_) == 1 && std::abs(position_.row_ - destPosition.row_) == 2;
@@ -78,26 +84,17 @@ public:
 		return false;
 	}
 };
-//TODO: add support for different colours pawns movec and attack
+
 class Pawn final : public Piece {
-public:
-	enum Direction {
-		down = -1,
-		up = 1
-	};
-private:
-	const Direction direction_;
 	bool firstMove_ = true;
 public:
-
-
-	constexpr explicit Pawn(const Position& pos, const Direction direction = up) noexcept : Piece(pos), direction_(direction){}
+	constexpr explicit Pawn(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner){}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
-		return position_.column_ == destPosition.column_ && (position_.row_ + direction_ == destPosition.row_ || firstMove_ && position_.row_ + 2*direction_ == destPosition.row_);
+		return position_.column_ == destPosition.column_ && (position_.row_ + static_cast<int>(owner_) == destPosition.row_ || firstMove_ && position_.row_ + 2*static_cast<int>(owner_) == destPosition.row_);
 	}
 
 	bool isConsistentWithAttackRules(const Position& destPosition) const noexcept final {
-		return position_.row_ + direction_ == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
+		return position_.row_ + static_cast<int>(owner_) == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
 	}
 
 	void attack(const Position& destPosition) noexcept final {

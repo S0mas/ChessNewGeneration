@@ -3,7 +3,7 @@
 
 class PieceMock final : public Piece {
 public:
-	PieceMock() : Piece(Position("A1")) {}
+	PieceMock(const Position& pos = Position("A1")) : Piece(pos) {}
 	bool isConsistentWithMoveRules(const Position& newPosition) const noexcept final {
 		return newPosition == Position("B4");
 	}

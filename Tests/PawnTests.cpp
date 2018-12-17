@@ -27,24 +27,24 @@ TEST(PawnTests, invalidMoves) {
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D1")));
 }
 TEST(PawnTests, invalidMovesWasMoved) {
-	Pawn pawn(Position("C1"), Pawn::down);
+	Pawn pawn(Position("C1"), Player::Black);
 	pawn.move(Position("C2"));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C4")));
 }
 
-TEST(PawnTests, validMovesWasNotMovedOppositeDirection) {
-	Pawn pawn(Position("C7"), Pawn::down);
+TEST(PawnTests, validMovesWasNotMovedBlack) {
+	Pawn pawn(Position("C7"), Player::Black);
 	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C6")));
 	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C5")));
 }
 
-TEST(PawnTests, validMovesWasMovedOppositeDirection) {
-	Pawn pawn(Position("C8"), Pawn::down);
+TEST(PawnTests, validMovesWasMovedBlack) {
+	Pawn pawn(Position("C8"), Player::Black);
 	pawn.move(Position("C7"));
 	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C6")));
 }
-TEST(PawnTests, invalidMovesOppositeDirection) {
-	Pawn pawn(Position("C6"), Pawn::down);
+TEST(PawnTests, invalidMovesBlack) {
+	Pawn pawn(Position("C6"), Player::Black);
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D2")));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D3")));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C7")));
@@ -56,8 +56,8 @@ TEST(PawnTests, invalidMovesOppositeDirection) {
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("B1")));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D1")));
 }
-TEST(PawnTests, invalidMovesWasMovedOppositeDirection) {
-	Pawn pawn(Position("C1"), Pawn::down);
+TEST(PawnTests, invalidMovesWasMovedBlack) {
+	Pawn pawn(Position("C1"), Player::Black);
 	pawn.move(Position("C2"));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C4")));
 }
