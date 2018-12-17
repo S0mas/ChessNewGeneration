@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <gtest/gtest.h>
 #include "../ChessNewGeneration/Position.h"
-
-
 TEST(PositionTests, StingTranslationValid) {
 	Position position1("A4");
 	EXPECT_EQ(position1.column_, 0);
@@ -24,7 +22,6 @@ TEST(PositionTests, StingTranslationValid) {
 	EXPECT_EQ(position5.column_, 2);
 	EXPECT_EQ(position5.row_, 0);
 }
-
 TEST(PositionTests, StingTranslationInvalid) {
 	
 	EXPECT_ANY_THROW(Position("ABC"));
