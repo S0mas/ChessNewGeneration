@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
-
+#include <vector>
+class Position;
+constexpr bool operator==(const Position &lhs, const Position &rhs) noexcept;
+constexpr bool operator!=(const Position &lhs, const Position &rhs) noexcept;
 class Position {
   static constexpr int MAX_NO = 7;
   static constexpr int MIN_NO = 0;
@@ -40,6 +43,26 @@ public:
     return *this;
   }
 
+  auto getSimplestRoute(const Position& destination) const noexcept{
+	  std::vector<Position> route;
+	  int stepColumn = 1;
+	  int stepRow = 1;
+	  if (column_ > destination.column_)
+		  stepColumn = -1;
+	  if (row_ > destination.row_)
+		  stepRow = -1;
+	  Position start = *this;
+	  while (start != destination) {
+		  if (start.column_ != destination.column_)
+			  start.column_ += stepColumn;
+		  if (start.row_ != destination.row_)
+			  start.row_ += stepRow;
+		  route.push_back(start);
+	  }
+	  route.pop_back();
+	  return route;
+  }
+
   class InvalidPositionException final : public std::exception {
     const char *what() const noexcept override {
       return "Invalid position specified";
@@ -54,9 +77,11 @@ public:
 };
 
 constexpr bool operator==(const Position &lhs, const Position &rhs) noexcept {
-  return lhs.column_ == rhs.column_ && lhs.row_ == rhs.row_;
+	return lhs.column_ == rhs.column_ && lhs.row_ == rhs.row_;
 }
 
 constexpr bool operator!=(const Position &lhs, const Position &rhs) noexcept {
-  return !(lhs == rhs);
+	return !(lhs == rhs);
 }
+
+

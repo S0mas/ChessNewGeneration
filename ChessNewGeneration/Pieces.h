@@ -1,6 +1,7 @@
 #pragma once
 #include "Position.h"
 #include "Playerh.h"
+#include <vector>
 
 class Piece {
 protected:
@@ -22,6 +23,11 @@ public:
 		return owner_;
 	}
 
+	virtual std::vector<Position> getRoute(const Position& destination) const {
+		if (!isConsistentWithMoveRules(destination) && !isConsistentWithAttackRules(destination))
+			throw InvalidDestination();
+		return position_.getSimplestRoute(destination);
+	}
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
 	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept {
 		return isConsistentWithMoveRules(destPosition);
@@ -37,6 +43,12 @@ public:
 		if (position_ != destPosition && isConsistentWithMoveRules(destPosition))
 			position_ = destPosition;
 	}
+
+	class InvalidDestination final : public std::exception {
+		const char *what() const noexcept override {
+			return "Invalid destination specified";
+		}
+	};
 };
 
 class King final : public Piece {
@@ -82,6 +94,10 @@ public:
 
 	bool isCheckingCollisions() const noexcept final {
 		return false;
+	}
+
+	std::vector<Position> getRoute(const Position& destination) const override {
+		return std::vector<Position>();
 	}
 };
 

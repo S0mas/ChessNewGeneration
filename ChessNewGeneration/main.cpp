@@ -1,4 +1,4 @@
-#include "Position.h"
+#include "Pieces.h"
 #include <QtCore/QCoreApplication>
 int main(int  argc, char * argv[])
 {

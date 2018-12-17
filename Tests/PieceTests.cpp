@@ -12,6 +12,7 @@ public:
 		return newPosition == Position("B4");
 	}
 };
+
 TEST(PieceTests, positionsUpdateAfterValidMove) {
 	PieceMock fakePiece;
 	const Position newPosition("B4");
