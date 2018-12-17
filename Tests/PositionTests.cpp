@@ -23,7 +23,6 @@ TEST(PositionTests, StingTranslationValid) {
 	EXPECT_EQ(position5.row_, 0);
 }
 TEST(PositionTests, StingTranslationInvalid) {
-	
 	EXPECT_ANY_THROW(Position("ABC"));
 	EXPECT_ANY_THROW(Position("A"));
 	EXPECT_ANY_THROW(Position(""));
@@ -34,7 +33,6 @@ TEST(PositionTests, StingTranslationInvalid) {
 	EXPECT_ANY_THROW(Position("-1"));
 }
 TEST(PositionTests, PositionEqualOperator) {
-
 	EXPECT_TRUE(Position("A1") == Position(0, 0));
 	EXPECT_TRUE(Position("H8") == Position(7, 7));
 	EXPECT_TRUE(Position("D4") == Position(3, 3));

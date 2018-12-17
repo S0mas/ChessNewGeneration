@@ -5,7 +5,7 @@ class KingTests : public PieceTests {};
 
 TEST(KingTests, validMoves) {
 	King king(Position("C4"));
-	
+
 	EXPECT_TRUE(king.isConsistentWithMoveRules(Position("C3")));
 	EXPECT_TRUE(king.isConsistentWithMoveRules(Position("C5")));
 	EXPECT_TRUE(king.isConsistentWithMoveRules(Position("B4")));

@@ -3,10 +3,12 @@
 
 class Position {
 	constexpr bool isPositionValid() const noexcept {
-		if (row_ < 0 || row_ > 7) { return false;
-}
-		if (column_ < 0 || column_ > 7) { return false;
-}
+		if (row_ < 0 || row_ > 7) {
+			return false;
+		}
+		if (column_ < 0 || column_ > 7) {
+			return false;
+		}
 		return true;
 	}
 
@@ -21,8 +23,9 @@ public:
 	int row_{};
 
 	constexpr Position(const int c, const int r) : column_(c), row_(r) {
-		if (!isPositionValid()) { throw InvalidPositionException();
-}
+		if (!isPositionValid()) {
+			throw InvalidPositionException();
+		}
 	}
 
 	explicit Position(const std::string& str) {
