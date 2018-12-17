@@ -78,7 +78,7 @@ public:
 		return false;
 	}
 };
-
+//TODO: add support for different colours pawns movec and attack
 class Pawn final : public Piece {
 	bool firstMove_ = true;
 public:
@@ -91,13 +91,14 @@ public:
 		return position_.row_ + 1 == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
 	}
 
-	void attack(const Position& destPosition) noexcept {
+	void attack(const Position& destPosition) noexcept final {
 		if (position_ != destPosition && isConsistentWithAttackRules(destPosition)) {
 			position_ = destPosition;
 			firstMove_ = false;
 		}
 	}
-	void move(const Position& destPosition) noexcept {
+
+	void move(const Position& destPosition) noexcept final {
 		if (position_ != destPosition && isConsistentWithMoveRules(destPosition)) {
 			position_ = destPosition;
 			firstMove_ = false;
