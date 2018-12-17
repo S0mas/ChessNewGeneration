@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="BishopTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="KingTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="KnightTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="PawnTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="PieceTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="QueenTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="RockTests.cpp">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+    <ClCompile Include="PieceTestsHead.h">
+      <Filter>PiecesTests</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="PiecesTests">
+      <UniqueIdentifier>{e1feb4bd-9d85-4fe6-8621-0172c3276f47}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

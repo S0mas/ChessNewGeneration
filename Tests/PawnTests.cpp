@@ -27,10 +27,41 @@ TEST(PawnTests, invalidMoves) {
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D1")));
 }
 TEST(PawnTests, invalidMovesWasMoved) {
-	Pawn pawn(Position("C1"));
+	Pawn pawn(Position("C1"), Pawn::down);
 	pawn.move(Position("C2"));
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C4")));
 }
+
+TEST(PawnTests, validMovesWasNotMovedOppositeDirection) {
+	Pawn pawn(Position("C7"), Pawn::down);
+	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C6")));
+	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C5")));
+}
+
+TEST(PawnTests, validMovesWasMovedOppositeDirection) {
+	Pawn pawn(Position("C8"), Pawn::down);
+	pawn.move(Position("C7"));
+	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C6")));
+}
+TEST(PawnTests, invalidMovesOppositeDirection) {
+	Pawn pawn(Position("C6"), Pawn::down);
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D2")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D3")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C7")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("B2")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("B3")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("B4")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C1")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C8")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("B1")));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D1")));
+}
+TEST(PawnTests, invalidMovesWasMovedOppositeDirection) {
+	Pawn pawn(Position("C1"), Pawn::down);
+	pawn.move(Position("C2"));
+	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("C4")));
+}
+
 TEST(PawnTests, moveUsesMoveRulesTests) {
 	const auto pawn = std::make_unique<Pawn>(Position("C4"));
 	const Position newPosition("B3");

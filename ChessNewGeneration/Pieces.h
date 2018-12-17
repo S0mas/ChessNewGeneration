@@ -80,15 +80,24 @@ public:
 };
 //TODO: add support for different colours pawns movec and attack
 class Pawn final : public Piece {
+public:
+	enum Direction {
+		down = -1,
+		up = 1
+	};
+private:
+	const Direction direction_;
 	bool firstMove_ = true;
 public:
-	constexpr explicit Pawn(const Position& pos) noexcept : Piece(pos) {}
+
+
+	constexpr explicit Pawn(const Position& pos, const Direction direction = up) noexcept : Piece(pos), direction_(direction){}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
-		return position_.column_ == destPosition.column_ && (position_.row_ + 1 == destPosition.row_ || firstMove_ && position_.row_ + 2 == destPosition.row_);
+		return position_.column_ == destPosition.column_ && (position_.row_ + direction_ == destPosition.row_ || firstMove_ && position_.row_ + 2*direction_ == destPosition.row_);
 	}
 
 	bool isConsistentWithAttackRules(const Position& destPosition) const noexcept final {
-		return position_.row_ + 1 == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
+		return position_.row_ + direction_ == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
 	}
 
 	void attack(const Position& destPosition) noexcept final {
