@@ -30,34 +30,34 @@ TEST(KingTests, invalidMoves) {
 }
 
 TEST(KingTests, moveUsesMoveRulesTests) {
-	const auto king = std::make_unique<King>(Position("C4"));
+	King king(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(king->isConsistentWithMoveRules(newPosition)).Return(true);
-	king->move(newPosition);
-	ASSERT_WAS_CALLED(king->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(king.isConsistentWithMoveRules(newPosition)).Return(true);
+	king.move(newPosition);
+	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
 }
 
 TEST(KingTests, attackUsesMoveRulesTests) {
-	const auto king = std::make_unique<King>(Position("C4"));
+	King king(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(king->isConsistentWithAttackRules(newPosition)).Return(true);
-	king->attack(newPosition);
-	ASSERT_WAS_CALLED(king->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(king.isConsistentWithAttackRules(newPosition)).Return(true);
+	king.attack(newPosition);
+	ASSERT_WAS_CALLED(king.isConsistentWithAttackRules(newPosition));
 }
 
 TEST(KingTests, attackRulesUsesMoveRules) {
-	const auto king = std::make_unique<King>(Position("C4"));
+	King king(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(king->isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = king->isConsistentWithAttackRules(newPosition);
-	ASSERT_WAS_CALLED(king->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(king.isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = king.isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
 }
 
 TEST(KingTests, checkingCollisions) {
-	const auto king = std::make_unique<King>(Position("C4"));
+	King king(Position("C4"));
 
-	EXPECT_TRUE(king->isCheckingCollisions());
+	EXPECT_TRUE(king.isCheckingCollisions());
 }

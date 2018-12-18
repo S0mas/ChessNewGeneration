@@ -4,7 +4,6 @@
 #include <vector>
 
 class Rule {
-	
 };
 
 class AttackRule {
@@ -18,8 +17,11 @@ public:
 
 class CollisionRule {
 public:
-	bool eval(const Position& destination, const std::vector<Piece*>& pieces) {
+	bool eval(const std::vector<Position>& route, const std::vector<Piece*>& pieces) {
+		for (const auto& position : route)
+			for (const auto& piece : pieces)
+				if (position == piece->getPosition())
+					return false;
 		return true;
 	}
 };
-

@@ -43,31 +43,31 @@ TEST(QueenTests, invalidMoves) {
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("D6")));
 }
 TEST(QueenTests, moveUsesMoveRulesTests) {
-	const auto queen = std::make_unique<Queen>(Position("C4"));
+	Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(queen->isConsistentWithMoveRules(newPosition)).Return(true);
-	queen->move(newPosition);
-	ASSERT_WAS_CALLED(queen->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(queen.isConsistentWithMoveRules(newPosition)).Return(true);
+	queen.move(newPosition);
+	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
 }
 TEST(QueenTests, attackUsesMoveRulesTests) {
-	const auto queen = std::make_unique<Queen>(Position("C4"));
+	Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(queen->isConsistentWithAttackRules(newPosition)).Return(true);
-	queen->attack(newPosition);
-	ASSERT_WAS_CALLED(queen->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(queen.isConsistentWithAttackRules(newPosition)).Return(true);
+	queen.attack(newPosition);
+	ASSERT_WAS_CALLED(queen.isConsistentWithAttackRules(newPosition));
 }
 TEST(QueenTests, attackRulesUsesMoveRules) {
-	const auto queen = std::make_unique<Queen>(Position("C4"));
+	Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(queen->isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = queen->isConsistentWithAttackRules(newPosition);
-	ASSERT_WAS_CALLED(queen->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(queen.isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = queen.isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
 }
 TEST(QueenTests, checkingCollisions) {
-	const auto queen = std::make_unique<Queen>(Position("C4"));
+	Queen queen(Position("C4"));
 
-	EXPECT_TRUE(queen->isCheckingCollisions());
+	EXPECT_TRUE(queen.isCheckingCollisions());
 }

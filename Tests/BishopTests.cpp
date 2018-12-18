@@ -38,25 +38,25 @@ TEST(BishopTests, moveUsesMoveRulesTests) {
 	ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
 }
 TEST(BishopTests, attackUsesMoveRulesTests) {
-	const auto bishop = std::make_unique<Bishop>(Position("C4"));
+	Bishop bishop(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(bishop->isConsistentWithAttackRules(newPosition)).Return(true);
-	bishop->attack(newPosition);
-	ASSERT_WAS_CALLED(bishop->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(bishop.isConsistentWithAttackRules(newPosition)).Return(true);
+	bishop.attack(newPosition);
+	ASSERT_WAS_CALLED(bishop.isConsistentWithAttackRules(newPosition));
 }
 TEST(BishopTests, attackRulesUsesMoveRules) {
-	const auto bishop = std::make_unique<Bishop>(Position("C4"));
+	Bishop bishop(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(bishop->isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = bishop->isConsistentWithAttackRules(newPosition);
-	ASSERT_WAS_CALLED(bishop->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(bishop.isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = bishop.isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
 }
 TEST(BishopTests, checkingCollisions) {
-	const auto bishop = std::make_unique<Bishop>(Position("C4"));
+	Bishop bishop(Position("C4"));
 
-	EXPECT_TRUE(bishop->isCheckingCollisions());
+	EXPECT_TRUE(bishop.isCheckingCollisions());
 }
 TEST(BishopTests, checkRoute) {
 	Bishop bishop(Position("C4"));

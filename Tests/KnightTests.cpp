@@ -27,31 +27,31 @@ TEST(KnightTests, invalidMoves) {
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("H8")));
 }
 TEST(KnightTests, moveUsesMoveRulesTests) {
-	const auto knight = std::make_unique<Knight>(Position("C4"));
+	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(knight->isConsistentWithMoveRules(newPosition)).Return(true);
-	knight->move(newPosition);
-	ASSERT_WAS_CALLED(knight->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(knight.isConsistentWithMoveRules(newPosition)).Return(true);
+	knight.move(newPosition);
+	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
 }
 TEST(KnightTests, attackUsesMoveRulesTests) {
-	const auto knight = std::make_unique<Knight>(Position("C4"));
+	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(knight->isConsistentWithAttackRules(newPosition)).Return(true);
-	knight->attack(newPosition);
-	ASSERT_WAS_CALLED(knight->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(knight.isConsistentWithAttackRules(newPosition)).Return(true);
+	knight.attack(newPosition);
+	ASSERT_WAS_CALLED(knight.isConsistentWithAttackRules(newPosition));
 }
 TEST(KnightTests, attackRulesUsesMoveRules) {
-	const auto knight = std::make_unique<Knight>(Position("C4"));
+	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(knight->isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = knight->isConsistentWithAttackRules(newPosition);
-	ASSERT_WAS_CALLED(knight->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(knight.isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = knight.isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
 }
 TEST(KnightTests, checkingCollisions) {
-	const auto knight = std::make_unique<Knight>(Position("C4"));
+	Knight knight(Position("C4"));
 
-	EXPECT_FALSE(knight->isCheckingCollisions());
+	EXPECT_FALSE(knight.isCheckingCollisions());
 }

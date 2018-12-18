@@ -33,31 +33,31 @@ TEST(RockTests, invalidMoves) {
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("G5")));
 }
 TEST(RockTests, moveUsesMoveRulesTests) {
-	const auto rock = std::make_unique<Rock>(Position("C4"));
+	Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(rock->isConsistentWithMoveRules(newPosition)).Return(true);
-	rock->move(newPosition);
-	ASSERT_WAS_CALLED(rock->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(rock.isConsistentWithMoveRules(newPosition)).Return(true);
+	rock.move(newPosition);
+	ASSERT_WAS_CALLED(rock.isConsistentWithMoveRules(newPosition));
 }
 TEST(RockTests, attackUsesMoveRulesTests) {
-	const auto rock = std::make_unique<Rock>(Position("C4"));
+	Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(rock->isConsistentWithAttackRules(newPosition)).Return(true);
-	rock->attack(newPosition);
-	ASSERT_WAS_CALLED(rock->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(rock.isConsistentWithAttackRules(newPosition)).Return(true);
+	rock.attack(newPosition);
+	ASSERT_WAS_CALLED(rock.isConsistentWithAttackRules(newPosition));
 }
 TEST(RockTests, attackRulesUsesMoveRules) {
-	const auto rock = std::make_unique<Rock>(Position("C4"));
+	Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(rock->isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = rock->isConsistentWithAttackRules(newPosition);
-	ASSERT_WAS_CALLED(rock->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(rock.isConsistentWithMoveRules(newPosition)).Return(true);
+	auto p = rock.isConsistentWithAttackRules(newPosition);
+	ASSERT_WAS_CALLED(rock.isConsistentWithMoveRules(newPosition));
 }
 TEST(RockTests, checkingCollisions) {
-	const auto rock = std::make_unique<Rock>(Position("C4"));
+	Rock rock(Position("C4"));
 
-	EXPECT_TRUE(rock->isCheckingCollisions());
+	EXPECT_TRUE(rock.isCheckingCollisions());
 }

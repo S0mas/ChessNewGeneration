@@ -63,23 +63,23 @@ TEST(PawnTests, invalidMovesWasMovedBlack) {
 }
 
 TEST(PawnTests, moveUsesMoveRulesTests) {
-	const auto pawn = std::make_unique<Pawn>(Position("C4"));
+	Pawn pawn(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(pawn->isConsistentWithMoveRules(newPosition)).Return(true);
-	pawn->move(newPosition);
-	ASSERT_WAS_CALLED(pawn->isConsistentWithMoveRules(newPosition));
+	WHEN_CALLED(pawn.isConsistentWithMoveRules(newPosition)).Return(true);
+	pawn.move(newPosition);
+	ASSERT_WAS_CALLED(pawn.isConsistentWithMoveRules(newPosition));
 }
 TEST(PawnTests, attackUsesMoveRulesTests) {
-	const auto pawn = std::make_unique<Pawn>(Position("C4"));
+	Pawn pawn(Position("C4"));
 	const Position newPosition("B3");
 
-	WHEN_CALLED(pawn->isConsistentWithAttackRules(newPosition)).Return(true);
-	pawn->attack(newPosition);
-	ASSERT_WAS_CALLED(pawn->isConsistentWithAttackRules(newPosition));
+	WHEN_CALLED(pawn.isConsistentWithAttackRules(newPosition)).Return(true);
+	pawn.attack(newPosition);
+	ASSERT_WAS_CALLED(pawn.isConsistentWithAttackRules(newPosition));
 }
 TEST(PawnTests, checkingCollisions) {
-	const auto pawn = std::make_unique<Pawn>(Position("C4"));
+	Pawn pawn(Position("C4"));
 
-	EXPECT_TRUE(pawn->isCheckingCollisions());
+	EXPECT_TRUE(pawn.isCheckingCollisions());
 }
