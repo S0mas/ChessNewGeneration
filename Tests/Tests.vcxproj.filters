@@ -31,6 +31,7 @@
     </ClCompile>
     <ClCompile Include="AttackTests.cpp" />
     <ClCompile Include="CollisionRule.cpp" />
+    <ClCompile Include="CheckTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

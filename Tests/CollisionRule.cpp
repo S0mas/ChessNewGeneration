@@ -13,27 +13,45 @@ public:
 };
 
 TEST(CollisionTests, noCollision) {
-	CollisionRule colisionRule;
-
-	std::vector<Piece*> pieces;
+	std::vector<const Piece*> pieces;
 	Bishop bishop(Position("D4"));
 	pieces.emplace_back(new Bishop(Position("D3")));
 	pieces.emplace_back(new Pawn(Position("E4")));
 	pieces.emplace_back(new Knight(Position("F5")));
 	pieces.emplace_back(new King(Position("E6")));
 	
-	EXPECT_TRUE(colisionRule.eval(bishop.getRoute(Position("F6")), pieces));
+	EXPECT_TRUE(CollisionRule::isThereNoCollisions(bishop.getRoute(Position("F6")), pieces));
 }
 
-TEST(CollisionTests, collision) {
-	CollisionRule colisionRule;
-
-	std::vector<Piece*> pieces;
+TEST(CollisionTests, collisionDiag) {
+	std::vector<const Piece*> pieces;
 	Bishop bishop(Position("D4"));
 	pieces.emplace_back(new Bishop(Position("D3")));
 	pieces.emplace_back(new Pawn(Position("E5")));
 	pieces.emplace_back(new Knight(Position("F5")));
 	pieces.emplace_back(new King(Position("E6")));
 
-	EXPECT_FALSE(colisionRule.eval(bishop.getRoute(Position("F6")), pieces));
+	EXPECT_FALSE(CollisionRule::isThereNoCollisions(bishop.getRoute(Position("F6")), pieces));
+}
+
+TEST(CollisionTests, collisionColumn) {
+	std::vector<const Piece*> pieces;
+	Rock rock(Position("D4"));
+	pieces.emplace_back(new Bishop(Position("D3")));
+	pieces.emplace_back(new Pawn(Position("E5")));
+	pieces.emplace_back(new Knight(Position("F5")));
+	pieces.emplace_back(new King(Position("D7")));
+
+	EXPECT_FALSE(CollisionRule::isThereNoCollisions(rock.getRoute(Position("D8")), pieces));
+}
+
+TEST(CollisionTests, collisionRow) {
+	std::vector<const Piece*> pieces;
+	Queen queen(Position("D4"));
+	pieces.emplace_back(new Bishop(Position("D3")));
+	pieces.emplace_back(new Pawn(Position("E5")));
+	pieces.emplace_back(new Knight(Position("F4")));
+	pieces.emplace_back(new King(Position("D7")));
+
+	EXPECT_FALSE(CollisionRule::isThereNoCollisions(queen.getRoute(Position("G4")), pieces));
 }
