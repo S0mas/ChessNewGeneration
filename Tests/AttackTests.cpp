@@ -13,35 +13,32 @@ public:
 };
 
 TEST(AttackTests, validAttacks) {
-	AttackRule attackRule;
 	King king(Position("D4"), Player::White);
 	Queen queen(Position("C5"), Player::Black);
 
-	EXPECT_TRUE(attackRule.eval(king, queen));
+	EXPECT_TRUE(AttackRule::isAttackValidMove(king, queen));
 
 	Pawn pawn(Position("D2"), Player::White);
 	Knight knight(Position("C3"), Player::Black);
 
-	EXPECT_TRUE(attackRule.eval(pawn, knight));
+	EXPECT_TRUE(AttackRule::isAttackValidMove(pawn, knight));
 
 	Pawn pawn2(Position("D4"), Player::Black);
 	Bishop bishop(Position("E3"), Player::White);
 
-	EXPECT_TRUE(attackRule.eval(pawn2, bishop));
+	EXPECT_TRUE(AttackRule::isAttackValidMove(pawn2, bishop));
 }
 
 TEST(AttackTests, attackingKingNoAllowed) {
-	AttackRule attackRule;
 	Pawn pawn(Position("D2"), Player::White);
 	King king(Position("C3"), Player::Black);
 
-	EXPECT_FALSE(attackRule.eval(pawn, king));
+	EXPECT_FALSE(AttackRule::isAttackValidMove(pawn, king));
 }
 
 TEST(AttackTests, attackingSameOwnerNotAllowed) {
-	AttackRule attackRule;
 	King king(Position("D4"), Player::White);
 	Queen queen(Position("C5"), Player::White);
 
-	EXPECT_FALSE(attackRule.eval(king, queen));
+	EXPECT_FALSE(AttackRule::isAttackValidMove(king, queen));
 }

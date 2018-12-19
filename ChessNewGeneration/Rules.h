@@ -8,15 +8,6 @@
 class Rule {
 };
 
-class AttackRule {
-public:
-	bool eval(const Piece& attacker, const Piece& target) {
-		if (typeid(target) == typeid(King) || attacker.getOwner() == target.getOwner())
-			return false;
-		return attacker.isConsistentWithAttackRules(target.getPosition());
-	}
-};
-
 class CollisionRule {
 public:
 	static bool isThereNoCollisions(const std::vector<Position>& route, const std::vector<const Piece*>& pieces) {
@@ -28,6 +19,20 @@ public:
 	}
 };
 
+class AttackRule {
+public:
+	static bool isAttackPossible(const Piece& attacker, const Piece& target, const std::vector<const Piece*>& pieces) {
+		return attacker.getOwner() != target.getOwner() && attacker.isConsistentWithAttackRules(target.getPosition())
+			&& CollisionRule::isThereNoCollisions(attacker.getRoute(target.getPosition()), pieces);
+	}
+
+	static bool isAttackValidMove(const Piece& attacker, const Piece& target) {
+		if (typeid(target) == typeid(King) || attacker.getOwner() == target.getOwner())
+			return false;
+		return attacker.isConsistentWithAttackRules(target.getPosition());
+	}
+};
+
 class CheckRule {
 public:
 	static bool isThereNoCheck(const Player& playerToVerify, const std::vector<const Piece*>& pieces) {
@@ -36,10 +41,21 @@ public:
 		});
 
 		const auto& check = std::find_if(pieces.begin(), pieces.end(), [king, &pieces, playerToVerify](const auto& piece) {
-			return piece->getOwner() != playerToVerify && piece->isConsistentWithAttackRules((*king)->getPosition()) &&
-				CollisionRule::isThereNoCollisions(piece->getRoute((*king)->getPosition()), pieces);
+			return AttackRule::isAttackPossible(*piece, **king, pieces);
 		});
-
+	
 		return check == std::end(pieces);
+	}
+};
+
+class CheckMateRule {
+public:
+	static bool isThereCheckMate(const Player& playerToVerify, const std::vector<const Piece*>& pieces) {
+		//get vec of all valid possible moves for white
+
+		//foreach move verify isThereNoCheck()
+			//if there is any move after whith isThereNoCheck returns true -> return false;
+
+		return true;
 	}
 };
