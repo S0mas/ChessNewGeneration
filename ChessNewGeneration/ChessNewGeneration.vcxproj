@@ -104,7 +104,7 @@
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Pieces.h" />
-    <ClInclude Include="Playerh.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="Rules.h" />
   </ItemGroup>

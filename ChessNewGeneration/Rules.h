@@ -26,10 +26,8 @@ public:
 			&& CollisionRule::isThereNoCollisions(attacker.getRoute(target.getPosition()), pieces);
 	}
 
-	static bool isAttackValidMove(const Piece& attacker, const Piece& target) {
-		if (typeid(target) == typeid(King) || attacker.getOwner() == target.getOwner())
-			return false;
-		return attacker.isConsistentWithAttackRules(target.getPosition());
+	static bool isAttackValidMove(const Piece& attacker, const Piece& target, const std::vector<const Piece*>& pieces) {
+		return typeid(target) != typeid(King) && isAttackPossible(attacker, target, pieces);
 	}
 };
 
