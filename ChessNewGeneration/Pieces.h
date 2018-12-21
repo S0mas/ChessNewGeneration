@@ -32,6 +32,14 @@ public:
 	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept {
 		return isConsistentWithMoveRules(destPosition);
 	}
+	std::vector<Position> getAllPossibleMoves() const noexcept {
+		std::vector<Position> possibleMoves;
+		possibleMoves.reserve(20);
+		for (const auto& position : getAllPossiblePositions())
+			if (isConsistentWithAttackRules(position) || isConsistentWithMoveRules(position))
+				possibleMoves.push_back(position);
+		return possibleMoves;
+	}
 	virtual bool isCheckingCollisions() const noexcept {
 		return true;
 	}
@@ -43,9 +51,11 @@ public:
 		if (position_ != destPosition && isConsistentWithMoveRules(destPosition))
 			position_ = destPosition;
 	}
+	virtual std::string toString() const noexcept { return "ABSTRACT_PIECE"; };
+
 
 	class InvalidDestination final : public std::exception {
-		const char* what() const noexcept override {
+		const char* what() const noexcept final {
 			return "Invalid destination specified";
 		}
 	};
@@ -57,6 +67,10 @@ public:
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) <= 1 && std::abs(position_.row_ - destPosition.row_) <= 1;
 	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wK") : std::string("bK");
+	}
 };
 
 class Queen final : public Piece {
@@ -66,6 +80,10 @@ public:
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_ ||
 			std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
 	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wQ") : std::string("bQ");
+	}
 };
 
 class Rock final : public Piece {
@@ -74,6 +92,10 @@ public:
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_;
 	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wR") : std::string("bR");
+	}
 };
 
 class Bishop final : public Piece {
@@ -81,6 +103,10 @@ public:
 	constexpr explicit Bishop(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
+	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wB") : std::string("bB");
 	}
 };
 
@@ -98,6 +124,10 @@ public:
 
 	std::vector<Position> getRoute(const Position& destination) const override {
 		return std::vector<Position>();
+	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wN") : std::string("bN");
 	}
 };
 
@@ -125,5 +155,9 @@ public:
 			position_ = destPosition;
 			firstMove_ = false;
 		}
+	}
+
+	std::string toString() const noexcept final {
+		return owner_ == Player::White ? std::string("wP") : std::string("bP");
 	}
 };

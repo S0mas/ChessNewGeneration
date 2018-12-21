@@ -20,7 +20,7 @@ TEST(CheckMateTests, whiteIsMated) {
 	pieces.emplace_back(new Rock(Position("A8"), Player::Black));
 	pieces.emplace_back(new Rock(Position("B7"), Player::Black));
 	pieces.emplace_back(new Bishop(Position("C3"), Player::Black));
-	pieces.emplace_back(new King(Position("B5"), Player::Black));
+	pieces.emplace_back(new King(Position("C5"), Player::Black));
 
 	EXPECT_TRUE(CheckMateRule::isThereCheckMate(Player::White, pieces));
 }
