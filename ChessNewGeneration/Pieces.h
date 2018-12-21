@@ -11,8 +11,8 @@ public:
 	constexpr explicit Piece(const Position& pos, const Player owner = Player::White) noexcept : position_(pos), owner_(owner) {}
 	Piece(const Piece& original) noexcept = default;
 	Piece(Piece&& original) noexcept = default;
-	Piece& operator=(const Piece& original) noexcept = default;
-	Piece& operator=(Piece&& original) noexcept = default;
+	Piece& operator=(const Piece& original) noexcept = delete;
+	Piece& operator=(Piece&& original) noexcept = delete;
 	virtual ~Piece() = default;
 
 	auto getPosition() const noexcept {
@@ -45,7 +45,7 @@ public:
 	}
 
 	class InvalidDestination final : public std::exception {
-		const char *what() const noexcept override {
+		const char* what() const noexcept override {
 			return "Invalid destination specified";
 		}
 	};
