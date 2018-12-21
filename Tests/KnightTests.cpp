@@ -50,8 +50,3 @@ TEST(KnightTests, attackRulesUsesMoveRules) {
 	auto p = knight.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
 }
-TEST(KnightTests, checkingCollisions) {
-	Knight knight(Position("C4"));
-
-	EXPECT_FALSE(knight.isCheckingCollisions());
-}

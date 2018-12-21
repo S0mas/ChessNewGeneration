@@ -66,8 +66,3 @@ TEST(QueenTests, attackRulesUsesMoveRules) {
 	auto p = queen.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
 }
-TEST(QueenTests, checkingCollisions) {
-	Queen queen(Position("C4"));
-
-	EXPECT_TRUE(queen.isCheckingCollisions());
-}

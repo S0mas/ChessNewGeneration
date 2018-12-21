@@ -56,8 +56,3 @@ TEST(RockTests, attackRulesUsesMoveRules) {
 	auto p = rock.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(rock.isConsistentWithMoveRules(newPosition));
 }
-TEST(RockTests, checkingCollisions) {
-	Rock rock(Position("C4"));
-
-	EXPECT_TRUE(rock.isCheckingCollisions());
-}

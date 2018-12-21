@@ -3,12 +3,13 @@
 #include <typeindex>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
+//TODO:Tests
 static bool isKing(const Piece& piece) noexcept {
 	return typeid(piece) == typeid(King);
 }
 
+//TODO:Tests
 //Both kings should allways be in the pieces vector
 static auto findKing(const Player& playerToVerify, const std::vector<const Piece*>& pieces) noexcept {
 	return  *std::find_if(pieces.begin(), pieces.end(), [playerToVerify](const auto& piece) {
@@ -16,18 +17,15 @@ static auto findKing(const Player& playerToVerify, const std::vector<const Piece
 	});
 }
 
-
-
+//TODO:Tests
 static auto getPieceByPosition(const Position& position, const std::vector<const Piece*>& pieces) noexcept {
 	return std::find_if(pieces.begin(), pieces.end(), [&position](const Piece* piece) { return piece->getPosition() == position; });
 }
 
+//TODO:Tests
 static bool isPositionOccupied(const Position& position, const std::vector<const Piece*>& pieces) noexcept {
 	return pieces.end() != getPieceByPosition(position, pieces);
 }
-
-class Rule {
-};
 
 class CollisionRule {
 public:
@@ -42,6 +40,7 @@ public:
 		return !isKing(target) && isAttackPossible(attacker, target, pieces);
 	}
 
+	//TODO:Tests
 	static bool isAttackPossible(const Piece& attacker, const Piece& target, const std::vector<const Piece*>& pieces) {
 		return attacker.getOwner() != target.getOwner() && attacker.isConsistentWithAttackRules(target.getPosition())
 			&& CollisionRule::isThereNoCollisions(attacker.getRoute(target.getPosition()), pieces);
@@ -50,6 +49,7 @@ public:
 
 class MoveRule {
 public:
+	//TODO:Tests
 	static bool isMovePossible(const Piece& mover, const Position& destination, const std::vector<const Piece*>& pieces) {
 		return mover.isConsistentWithMoveRules(destination) && !isPositionOccupied(destination, pieces) && CollisionRule::isThereNoCollisions(mover.getRoute(destination), pieces);
 	}
@@ -66,6 +66,7 @@ public:
 	}
 };
 
+//TODO:Tests
 static auto getAllValidMovesForPiece(const Piece& piece, const std::vector<const Piece*>& pieces) noexcept {
 	const auto& possibleMoves = piece.getAllPossibleMoves();
 	std::vector<Position> validMoves;
@@ -85,6 +86,7 @@ static auto getAllValidMovesForPiece(const Piece& piece, const std::vector<const
 }
 
 //TODO: REFACTOR THIS
+//TODO:Tests
 static auto makeTestMove(const Piece& piece, const Position& position, const std::vector<const Piece*>& pieces) {
 	auto copyPieces = pieces;
 
@@ -111,9 +113,7 @@ public:
 		for(auto& piece : pieces) {
 			if(piece->getOwner() == playerToVerify) {
 				const auto& movesToCheck = getAllValidMovesForPiece(*piece, pieces);
-				//std::cout << "piece:" << piece->toString() << std::endl;
 				for(const auto& move : movesToCheck) {
-					//std::cout << "------> " << move.toString() << std::endl;
 					auto copyPieces = makeTestMove(*piece, move, pieces);
 					if (CheckRule::isThereNoCheck(playerToVerify, copyPieces)) {
 						delete copyPieces.back();
@@ -121,12 +121,10 @@ public:
 						return false;
 					}
 					delete copyPieces.back();
-					copyPieces.pop_back();				
+					copyPieces.pop_back();
 				}
 			}
 		}
 		return true;
 	}
 };
-
-

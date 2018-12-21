@@ -53,11 +53,6 @@ TEST(BishopTests, attackRulesUsesMoveRules) {
 	auto p = bishop.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
 }
-TEST(BishopTests, checkingCollisions) {
-	Bishop bishop(Position("C4"));
-
-	EXPECT_TRUE(bishop.isCheckingCollisions());
-}
 TEST(BishopTests, checkRoute) {
 	Bishop bishop(Position("C4"));
 

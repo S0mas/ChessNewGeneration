@@ -54,8 +54,8 @@ public:
 
   auto getSimplestRoute(const Position& destination) const noexcept{
 	  std::vector<Position> route;
-	  int stepColumn = 1;
-	  int stepRow = 1;
+	  auto stepColumn = 1;
+	  auto stepRow = 1;
 	  if (column_ > destination.column_)
 		  stepColumn = -1;
 	  if (row_ > destination.row_)

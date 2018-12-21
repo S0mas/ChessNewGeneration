@@ -102,7 +102,6 @@
     <None Include=".clang-tidy" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Helpers.h" />
     <ClInclude Include="Pieces.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />

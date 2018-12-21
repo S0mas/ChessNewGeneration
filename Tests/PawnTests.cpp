@@ -78,8 +78,3 @@ TEST(PawnTests, attackUsesMoveRulesTests) {
 	pawn.attack(newPosition);
 	ASSERT_WAS_CALLED(pawn.isConsistentWithAttackRules(newPosition));
 }
-TEST(PawnTests, checkingCollisions) {
-	Pawn pawn(Position("C4"));
-
-	EXPECT_TRUE(pawn.isCheckingCollisions());
-}

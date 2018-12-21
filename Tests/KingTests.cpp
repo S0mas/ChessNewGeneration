@@ -55,9 +55,3 @@ TEST(KingTests, attackRulesUsesMoveRules) {
 	auto p = king.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
 }
-
-TEST(KingTests, checkingCollisions) {
-	King king(Position("C4"));
-
-	EXPECT_TRUE(king.isCheckingCollisions());
-}

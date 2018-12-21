@@ -23,15 +23,18 @@ public:
 		return owner_;
 	}
 
+	//TODO:Tests
 	virtual std::vector<Position> getRoute(const Position& destination) const {
 		if (!isConsistentWithMoveRules(destination) && !isConsistentWithAttackRules(destination))
 			throw InvalidDestination();
 		return position_.getSimplestRoute(destination);
 	}
+
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
 	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept {
 		return isConsistentWithMoveRules(destPosition);
 	}
+	//TODO:Tests
 	std::vector<Position> getAllPossibleMoves() const noexcept {
 		std::vector<Position> possibleMoves;
 		possibleMoves.reserve(20);
@@ -40,17 +43,17 @@ public:
 				possibleMoves.push_back(position);
 		return possibleMoves;
 	}
-	virtual bool isCheckingCollisions() const noexcept {
-		return true;
-	}
+
 	virtual void attack(const Position& destPosition) noexcept {
 		if (position_ != destPosition && isConsistentWithAttackRules(destPosition))
 			position_ = destPosition;
 	}
+
 	virtual void move(const Position& destPosition) noexcept {
 		if (position_ != destPosition && isConsistentWithMoveRules(destPosition))
 			position_ = destPosition;
 	}
+	//TODO:Tests
 	virtual std::string toString() const noexcept { return "ABSTRACT_PIECE"; };
 
 
@@ -116,10 +119,6 @@ public:
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return std::abs(position_.column_ - destPosition.column_) == 2 && std::abs(position_.row_ - destPosition.row_) == 1 ||
 			std::abs(position_.column_ - destPosition.column_) == 1 && std::abs(position_.row_ - destPosition.row_) == 2;
-	}
-
-	bool isCheckingCollisions() const noexcept final {
-		return false;
 	}
 
 	std::vector<Position> getRoute(const Position& destination) const override {
