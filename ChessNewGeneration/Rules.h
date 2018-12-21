@@ -111,9 +111,9 @@ public:
 		for(auto& piece : pieces) {
 			if(piece->getOwner() == playerToVerify) {
 				const auto& movesToCheck = getAllValidMovesForPiece(*piece, pieces);
-				std::cout << "piece:" << piece->toString() << std::endl;
+				//std::cout << "piece:" << piece->toString() << std::endl;
 				for(const auto& move : movesToCheck) {
-					std::cout << "------> " << move.toString() << std::endl;
+					//std::cout << "------> " << move.toString() << std::endl;
 					auto copyPieces = makeTestMove(*piece, move, pieces);
 					if (CheckRule::isThereNoCheck(playerToVerify, copyPieces)) {
 						delete copyPieces.back();
