@@ -12,14 +12,19 @@ public:
 	}
 };
 
-TEST(CheckTests, noWhiteCheck_BlackCheck) {
-	std::vector<const Piece*> pieces;
-	
-	pieces.emplace_back(new King(Position("A1")));
-	pieces.emplace_back(new Pawn(Position("A2")));
-	pieces.emplace_back(new Rock(Position("A8"), Player::Black));
-	pieces.emplace_back(new King(Position("B3"), Player::Black));
+/*TEST(CheckTests, noCheck) {
+	ChessBoard cbMock;
+	King king(Position("A1"));
+	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
+		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(false);
+	WHEN_CALLED(cbMock.findKing(ANY_REF(Player))).Return(&king);
+	EXPECT_FALSE(Rules::isThereCheck(Player::White, cbMock));
+}*/
 
-	EXPECT_FALSE(CheckRule::isThereNoCheck(Player::Black, pieces));
-	EXPECT_TRUE(CheckRule::isThereNoCheck(Player::White, pieces));
-}
+/*TEST(CheckTests, check) {
+	ChessBoard cbMock;
+	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
+		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(true);
+
+	EXPECT_TRUE(Rules::isThereCheck(Player::White, cbMock));
+}*/

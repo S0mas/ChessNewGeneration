@@ -2,7 +2,7 @@
 #include "Position.h"
 #include "Player.h"
 #include <vector>
-
+class King;
 class Piece {
 protected:
 	Position position_;
@@ -23,11 +23,19 @@ public:
 		return owner_;
 	}
 
+	void setPosition(const Position& destination) {
+		position_ = destination;
+	}
+
 	//TODO:Tests
 	virtual std::vector<Position> getRoute(const Position& destination) const {
 		if (!isConsistentWithMoveRules(destination) && !isConsistentWithAttackRules(destination))
 			throw InvalidDestination();
 		return position_.getSimplestRoute(destination);
+	}
+
+	virtual bool isKing() const noexcept {
+		return false;
 	}
 
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
@@ -38,7 +46,7 @@ public:
 	std::vector<Position> getAllPossibleMoves() const noexcept {
 		std::vector<Position> possibleMoves;
 		possibleMoves.reserve(20);
-		for (const auto& position : getAllPossiblePositions())
+		for (const auto& position : Position::getAllPossiblePositions())
 			if (isConsistentWithAttackRules(position) || isConsistentWithMoveRules(position))
 				possibleMoves.push_back(position);
 		return possibleMoves;
@@ -56,7 +64,6 @@ public:
 	//TODO:Tests
 	virtual std::string toString() const noexcept { return "ABSTRACT_PIECE"; };
 
-
 	class InvalidDestination final : public std::exception {
 		const char* what() const noexcept final {
 			return "Invalid destination specified";
@@ -73,6 +80,10 @@ public:
 
 	std::string toString() const noexcept final {
 		return owner_ == Player::White ? std::string("wK") : std::string("bK");
+	}
+
+	bool isKing() const noexcept final {
+		return true;
 	}
 };
 

@@ -2,7 +2,7 @@
 #include "pch.h"
 #include <gtest/gtest.h>
 #include <isolator.h>
-#include "../ChessNewGeneration/Pieces.h"
+#include "../ChessNewGeneration/Chessboard.h"
 #include "../ChessNewGeneration/Rules.h"
 
 class CheckMateTests : public ::testing::Test {
@@ -13,27 +13,21 @@ public:
 };
 
 TEST(CheckMateTests, whiteIsMated) {
-	std::vector<const Piece*> pieces;
+	ChessBoard cbMock;
+	std::vector<Position> moves;
+	moves.push_back(Position("A1"));
+	WHEN_CALLED(Rules::isLegalMove).Return(false);
+	PRIVATE_WHEN_CALLED(_, Rules::getAllValidMovesForPiece, TYPEOF(const Piece&), TYPEOF(const ChessBoard&)).Return(BY_VAL(moves));
 
-	pieces.emplace_back(new King(Position("A1")));
-	pieces.emplace_back(new Pawn(Position("A2")));
-	pieces.emplace_back(new Rock(Position("A8"), Player::Black));
-	pieces.emplace_back(new Rock(Position("B7"), Player::Black));
-	pieces.emplace_back(new Bishop(Position("C3"), Player::Black));
-	pieces.emplace_back(new King(Position("C5"), Player::Black));
-
-	EXPECT_TRUE(CheckMateRule::isThereCheckMate(Player::White, pieces));
+	EXPECT_TRUE(Rules::isThereCheckMate(Player::White, cbMock));
 }
 
 TEST(CheckMateTests, whiteIsNotMated) {
-	std::vector<const Piece*> pieces;
+	ChessBoard cbMock;
+	std::vector<Position> moves;
+	moves.push_back(Position("A1"));
+	WHEN_CALLED(Rules::isLegalMove).Return(true);
+	PRIVATE_WHEN_CALLED(_, Rules::getAllValidMovesForPiece, TYPEOF(const Piece&), TYPEOF(const ChessBoard&)).Return(BY_VAL(moves));
 
-	pieces.emplace_back(new King(Position("A1")));
-	pieces.emplace_back(new Pawn(Position("A2")));
-	pieces.emplace_back(new Rock(Position("A8"), Player::Black));
-	pieces.emplace_back(new Rock(Position("A7"), Player::Black));
-	pieces.emplace_back(new Bishop(Position("C3"), Player::Black));
-	pieces.emplace_back(new King(Position("B5"), Player::Black));
-
-	EXPECT_FALSE(CheckMateRule::isThereCheckMate(Player::White, pieces));
+	EXPECT_TRUE(Rules::isThereCheckMate(Player::White, cbMock));
 }

@@ -13,45 +13,19 @@ public:
 };
 
 TEST(CollisionTests, noCollision) {
-	std::vector<const Piece*> pieces;
-	Bishop bishop(Position("D4"));
-	pieces.emplace_back(new Bishop(Position("D3")));
-	pieces.emplace_back(new Pawn(Position("E4")));
-	pieces.emplace_back(new Knight(Position("F5")));
-	pieces.emplace_back(new King(Position("E6")));
-	
-	EXPECT_TRUE(CollisionRule::isThereNoCollisions(bishop.getRoute(Position("F6")), pieces));
+	ChessBoard cbMock;
+	std::vector<Position> dummyRoute;
+	dummyRoute.push_back(Position("D4"));
+	dummyRoute.push_back(Position("D5"));
+
+	EXPECT_FALSE(Rules::isThereCollisions(dummyRoute, cbMock));
 }
 
-TEST(CollisionTests, collisionDiag) {
-	std::vector<const Piece*> pieces;
-	Bishop bishop(Position("D4"));
-	pieces.emplace_back(new Bishop(Position("D3")));
-	pieces.emplace_back(new Pawn(Position("E5")));
-	pieces.emplace_back(new Knight(Position("F5")));
-	pieces.emplace_back(new King(Position("E6")));
+TEST(CollisionTests, collision) {
+	ChessBoard cbMock;
+	std::vector<Position> dummyRoute;
+	dummyRoute.push_back(Position("D1"));
+	dummyRoute.push_back(Position("D2"));
 
-	EXPECT_FALSE(CollisionRule::isThereNoCollisions(bishop.getRoute(Position("F6")), pieces));
-}
-
-TEST(CollisionTests, collisionColumn) {
-	std::vector<const Piece*> pieces;
-	Rock rock(Position("D4"));
-	pieces.emplace_back(new Bishop(Position("D3")));
-	pieces.emplace_back(new Pawn(Position("E5")));
-	pieces.emplace_back(new Knight(Position("F5")));
-	pieces.emplace_back(new King(Position("D7")));
-
-	EXPECT_FALSE(CollisionRule::isThereNoCollisions(rock.getRoute(Position("D8")), pieces));
-}
-
-TEST(CollisionTests, collisionRow) {
-	std::vector<const Piece*> pieces;
-	Queen queen(Position("D4"));
-	pieces.emplace_back(new Bishop(Position("D3")));
-	pieces.emplace_back(new Pawn(Position("E5")));
-	pieces.emplace_back(new Knight(Position("F4")));
-	pieces.emplace_back(new King(Position("D7")));
-
-	EXPECT_FALSE(CollisionRule::isThereNoCollisions(queen.getRoute(Position("G4")), pieces));
+	EXPECT_TRUE(Rules::isThereCollisions(dummyRoute, cbMock));
 }

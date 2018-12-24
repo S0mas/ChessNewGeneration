@@ -40,6 +40,7 @@
     <ClCompile Include="BishopTests.cpp" />
     <ClCompile Include="CheckMateTests.cpp" />
     <ClCompile Include="CheckTests.cpp" />
+    <ClCompile Include="ChessBoardTests.cpp" />
     <ClCompile Include="KingTests.cpp" />
     <ClCompile Include="KnightTests.cpp" />
     <ClCompile Include="CollisionRule.cpp" />

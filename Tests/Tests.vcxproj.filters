@@ -33,6 +33,7 @@
     <ClCompile Include="CollisionRule.cpp" />
     <ClCompile Include="CheckTests.cpp" />
     <ClCompile Include="CheckMateTests.cpp" />
+    <ClCompile Include="ChessBoardTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

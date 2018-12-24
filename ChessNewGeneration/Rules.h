@@ -1,130 +1,98 @@
 #pragma once
-#include "Pieces.h"
 #include <typeindex>
 #include <vector>
 #include <algorithm>
+#include "ChessBoard.h"
 
-//TODO:Tests
-static bool isKing(const Piece& piece) noexcept {
-	return typeid(piece) == typeid(King);
-}
+class Rules {
 
-//TODO:Tests
-//Both kings should allways be in the pieces vector
-static auto findKing(const Player& playerToVerify, const std::vector<const Piece*>& pieces) noexcept {
-	return  *std::find_if(pieces.begin(), pieces.end(), [playerToVerify](const auto& piece) {
-		return isKing(*piece) && piece->getOwner() == playerToVerify;
-	});
-}
+	FRIEND_TEST(CheckTests, noCheck);
+	FRIEND_TEST(CheckTests, check);
+	FRIEND_TEST(CollisionTests, noCollision);
+	FRIEND_TEST(CollisionTests, collision);
+	FRIEND_TEST(AttackTests, legalAttack);
+	FRIEND_TEST(AttackTests, notLegalAttack_cantAttackKing);
+	FRIEND_TEST(AttackTests, notLegalAttack_impossible);
+	FRIEND_TEST(AttackTests, possibleAttack);
+	FRIEND_TEST(AttackTests, impossibleAttack_invalidPath);
+	FRIEND_TEST(AttackTests, impossibleAttack_KingAsTarget);
+	FRIEND_TEST(AttackTests, impossibleAttack_collision);
+	FRIEND_TEST(AttackTests, impossibleAttack_sameOwner);
 
-//TODO:Tests
-static auto getPieceByPosition(const Position& position, const std::vector<const Piece*>& pieces) noexcept {
-	return std::find_if(pieces.begin(), pieces.end(), [&position](const Piece* piece) { return piece->getPosition() == position; });
-}
+	static bool isOwnerActivePlayer(const Piece& piece, const Player& activePlayer) noexcept {
+		return piece.getOwner() == activePlayer;
+	}
 
-//TODO:Tests
-static bool isPositionOccupied(const Position& position, const std::vector<const Piece*>& pieces) noexcept {
-	return pieces.end() != getPieceByPosition(position, pieces);
-}
+	static bool isThereCollisions(const std::vector<Position>& route, const ChessBoard& chessboard) {
+		return route.end() != std::find_if(route.begin(), route.end(), [&chessboard](const Position& position) { 
+			return chessboard.isPositionOccupied(position); });
+	}
 
-class CollisionRule {
+	static bool isAttackLegal(const Piece& attacker, const std::unique_ptr<Piece>& target, const ChessBoard& chessboard) {
+		return !target->isKing() && isAttackPossible(attacker, target, chessboard);
+	}
+
+	static bool isAttackPossible(const Piece& attacker, const std::unique_ptr<Piece>& target, const ChessBoard& chessboard) {
+		return attacker.getOwner() != target->getOwner() && attacker.isConsistentWithAttackRules(target->getPosition())
+			&& !isThereCollisions(attacker.getRoute(target->getPosition()), chessboard);
+	}
+
+	static bool isMovePossible(const Piece& mover, const Position& destination, const ChessBoard& chessboard) {
+		return mover.isConsistentWithMoveRules(destination) && !chessboard.isPositionOccupied(destination) && !isThereCollisions(mover.getRoute(destination), chessboard);
+	}
+
+	static bool isThereCheck(const Player& playerToVerify, const ChessBoard& chessboard) {
+		const auto& king = chessboard.findKing(playerToVerify);
+		const auto& pieces = chessboard.getPieces();
+		return std::find_if(pieces.cbegin(), pieces.cend(), [&king, &chessboard](const auto& piece) {
+			return isAttackPossible(*piece, *king, chessboard);
+		}) == pieces.cend();
+	}
+
+	static auto getAllValidMovesForPiece(const Piece& piece, const ChessBoard& chessboard) noexcept {
+		const auto& possibleMoves = piece.getAllPossibleMoves();
+		std::vector<Position> validMoves;
+		validMoves.reserve(100);
+		for (const auto& destination : possibleMoves) {
+			auto isValid = false;
+			const auto& target = chessboard.getPieceByPosition(destination);
+			if (target == chessboard.getPieces().cend())
+				isValid = isMovePossible(piece, destination, chessboard);
+			else
+				isValid = isAttackPossible(piece, *target, chessboard);
+			if (isValid)
+				validMoves.push_back(destination);
+		}
+		return validMoves;
+	}
 public:
-	static bool isThereNoCollisions(const std::vector<Position>& route, const std::vector<const Piece*>& pieces) {
-		return route.end() == std::find_if(route.begin(), route.end(), [&pieces](const Position& position) { return isPositionOccupied(position, pieces); });
+	static bool isLegalMove(const Player& playerToMove, const SimpleMove& simpleMove, ChessBoard& chessboard) noexcept {
+		auto const& pieceToMove = chessboard.getPieceByPosition(simpleMove.origin_);
+		if (pieceToMove == chessboard.notFound() || isOwnerActivePlayer(**pieceToMove, playerToMove))
+			return false;
+		auto const& pieceToAttack = chessboard.getPieceByPosition(simpleMove.destination_);
+
+		auto const& isLegal = (pieceToAttack == chessboard.notFound()) ? isMovePossible(**pieceToMove, simpleMove.destination_, chessboard)
+			: isAttackLegal(**pieceToMove, *pieceToAttack, chessboard);
+		
+		auto result = false;
+		if (isLegal) {
+			chessboard.doMove(simpleMove);
+			result = isThereCheck(playerToMove, chessboard);
+			chessboard.undoMove();
+		}
+		return result;
 	}
-};
 
-class AttackRule {
-public:
-	static bool isAttackValidMove(const Piece& attacker, const Piece& target, const std::vector<const Piece*>& pieces) {
-		return !isKing(target) && isAttackPossible(attacker, target, pieces);
-	}
-
-	//TODO:Tests
-	static bool isAttackPossible(const Piece& attacker, const Piece& target, const std::vector<const Piece*>& pieces) {
-		return attacker.getOwner() != target.getOwner() && attacker.isConsistentWithAttackRules(target.getPosition())
-			&& CollisionRule::isThereNoCollisions(attacker.getRoute(target.getPosition()), pieces);
-	}
-};
-
-class MoveRule {
-public:
-	//TODO:Tests
-	static bool isMovePossible(const Piece& mover, const Position& destination, const std::vector<const Piece*>& pieces) {
-		return mover.isConsistentWithMoveRules(destination) && !isPositionOccupied(destination, pieces) && CollisionRule::isThereNoCollisions(mover.getRoute(destination), pieces);
-	}
-};
-
-class CheckRule {
-public:
-	static bool isThereNoCheck(const Player& playerToVerify, const std::vector<const Piece*>& pieces) {
-		const auto& king = findKing(playerToVerify, pieces);
-
-		return std::find_if(pieces.begin(), pieces.end(), [king, &pieces](const auto& piece) {
-			return AttackRule::isAttackPossible(*piece, *king, pieces);
-		}) == std::end(pieces);
-	}
-};
-
-//TODO:Tests
-static auto getAllValidMovesForPiece(const Piece& piece, const std::vector<const Piece*>& pieces) noexcept {
-	const auto& possibleMoves = piece.getAllPossibleMoves();
-	std::vector<Position> validMoves;
-	validMoves.reserve(100);
-
-	for (const auto& destination : possibleMoves) {
-		auto isValid = false;
-		const auto& target = getPieceByPosition(destination, pieces);
-		if (target == pieces.end())
-			isValid = MoveRule::isMovePossible(piece, destination, pieces);
-		else
-			isValid = AttackRule::isAttackPossible(piece, **target, pieces);
-		if (isValid)
-			validMoves.push_back(destination);
-	}
-	return validMoves;
-}
-
-//TODO: REFACTOR THIS
-//TODO:Tests
-static auto makeTestMove(const Piece& piece, const Position& position, const std::vector<const Piece*>& pieces) {
-	auto copyPieces = pieces;
-
-	const auto& toRemove_destination = std::find_if(copyPieces.begin(), copyPieces.end(), [&position](const Piece* p) { return position == p->getPosition(); });
-	if (toRemove_destination != copyPieces.end())
-		copyPieces.erase(toRemove_destination);
-	
-	const auto& toRemove_mover = std::find_if(copyPieces.begin(), copyPieces.end(), [&piece](const Piece* p) { return p->getPosition() == piece.getPosition(); });
-	if (toRemove_mover != copyPieces.end())
-		copyPieces.erase(toRemove_mover);
-
-	//memoryleak so need to delete and pop this after
-	if (isKing(piece))
-		copyPieces.push_back(new King(position, piece.getOwner()));
-	else
-		copyPieces.push_back(new Pawn(position, piece.getOwner()));
-	return copyPieces;
-}
-
-class CheckMateRule {
-public:
-	//TODO: REFACTOR THIS
-	static bool isThereCheckMate(const Player& playerToVerify, const std::vector<const Piece*>& pieces) {
-		for(auto& piece : pieces) {
-			if(piece->getOwner() == playerToVerify) {
-				const auto& movesToCheck = getAllValidMovesForPiece(*piece, pieces);
-				for(const auto& move : movesToCheck) {
-					auto copyPieces = makeTestMove(*piece, move, pieces);
-					if (CheckRule::isThereNoCheck(playerToVerify, copyPieces)) {
-						delete copyPieces.back();
-						copyPieces.pop_back();
-						return false;
-					}
-					delete copyPieces.back();
-					copyPieces.pop_back();
-				}
+	static bool isThereCheckMate(const Player& playerToVerify, ChessBoard& chessboard) {
+		for (const auto& piece : chessboard.getPieces()) {
+			if (piece->getOwner() == playerToVerify) {
+				const auto& allPossibleDestinations = getAllValidMovesForPiece(*piece, chessboard);
+				return allPossibleDestinations.end() == std::find_if(allPossibleDestinations.begin(), allPossibleDestinations.end(), [&playerToVerify, &chessboard, origin = piece->getPosition()](const auto& destination) {
+					return isLegalMove(playerToVerify, { origin, destination }, chessboard); });
 			}
 		}
 		return true;
 	}
 };
+

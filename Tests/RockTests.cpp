@@ -4,20 +4,11 @@
 class RockTests : public PieceTests {};
 TEST(RockTests, validMoves) {
 	Rock rock(Position("C4"));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("A4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("B4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("D4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("E4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("F4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("G4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("H4")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C1")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C2")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C3")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C5")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C6")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C7")));
-	EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C8")));
+	for (const auto& column : Position::getAllColumns())
+		EXPECT_TRUE(rock.isConsistentWithMoveRules(Position(column+"4")));
+
+	for (const auto& row : Position::getAllRows()) 
+		EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C" + row)));
 }
 TEST(RockTests, invalidMoves) {
 	Rock rock(Position("C4"));
