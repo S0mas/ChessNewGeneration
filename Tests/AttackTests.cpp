@@ -14,7 +14,7 @@ public:
 };
 struct AttackTestingObjects {
 	ChessBoard cbMock;
-	Rock attacker{ Rock(Position("F8")) };
+	Rook attacker{ Rook(Position("F8")) };
 	Bishop targetWhite{ Bishop(Position("A1")) };
 	Bishop targetBlack{ Bishop(Position("A1"), Player::Black) };
 	King targetKing{ King(Position("A1"), Player::Black) };

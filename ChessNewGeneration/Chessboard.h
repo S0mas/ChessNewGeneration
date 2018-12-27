@@ -28,8 +28,8 @@ class Pieces {
 		std::string rowNumber = (owner == Player::White) ? "1" : "8";
 		pieces_.at(posInArray++) = std::make_unique<King>(Position("E" + rowNumber));
 		pieces_.at(posInArray++) = std::make_unique<Queen>(Position("D" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Rock>(Position("A" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Rock>(Position("H" + rowNumber));
+		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("A" + rowNumber));
+		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("H" + rowNumber));
 		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("B" + rowNumber));
 		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("G" + rowNumber));
 		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("C" + rowNumber));

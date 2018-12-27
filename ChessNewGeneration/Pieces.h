@@ -100,9 +100,9 @@ public:
 	}
 };
 
-class Rock final : public Piece {
+class Rook final : public Piece {
 public:
-	constexpr explicit Rock(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
+	constexpr explicit Rook(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_;
 	}
