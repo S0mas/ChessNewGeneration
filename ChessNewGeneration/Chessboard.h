@@ -3,6 +3,8 @@
 #include "Player.h"
 #include <algorithm>
 #include <stack>
+#include "ChessboardPrinter.h"
+#include <iostream>
 
 struct SimpleMove {
 	Position origin_;
@@ -137,19 +139,19 @@ public:
 	}
 
 	std::string toString() const noexcept {
-		std::string result = "\n   A  B  C  D  E  F  G  H  ";
-		for(const auto& row : Position::getAllRows()) {
-			result += "\n  ________________________\n";
-			result += "\n" + row + " ";
-			for (const auto& column : Position::getAllColumns()) {
-				const auto& piece = getPieceByPosition(Position(column + row));
-				if(piece == notFound())
-					result += "  ";
+		std::string result;
+		for (auto i = 8; i > 0; --i) {
+			Row row(i);
+			for (auto j = 0; j < 8; ++j) {
+				const auto& piece = getPieceByPosition(Position(j, i - 1));
+				if (piece != notFound())
+					row.fields[j].piece_ = (*piece)->toString();
 				else
-					result += (*piece)->toString();
-				result += " ";
+					row.fields[j].piece_ = row.fields[j].spaceChar;
 			}
+			result += row.toString();			
 		}
+		result += "  A  B  C  D  E  F  G  H  \n";
 		return result;
 	}
 };

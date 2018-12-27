@@ -79,7 +79,7 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wK") : std::string("bK");
+		return owner_ == Player::White ? std::string("K") : std::string("k");
 	}
 
 	bool isKing() const noexcept final {
@@ -96,7 +96,7 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wQ") : std::string("bQ");
+		return owner_ == Player::White ? std::string("Q") : std::string("q");
 	}
 };
 
@@ -108,7 +108,7 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wR") : std::string("bR");
+		return owner_ == Player::White ? std::string("R") : std::string("r");
 	}
 };
 
@@ -120,7 +120,7 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wB") : std::string("bB");
+		return owner_ == Player::White ? std::string("B") : std::string("b");
 	}
 };
 
@@ -137,7 +137,7 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wN") : std::string("bN");
+		return owner_ == Player::White ? std::string("N") : std::string("n");
 	}
 };
 
@@ -168,6 +168,6 @@ public:
 	}
 
 	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("wP") : std::string("bP");
+		return owner_ == Player::White ? std::string("P") : std::string("p");
 	}
 };
