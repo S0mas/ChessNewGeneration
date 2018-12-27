@@ -46,5 +46,6 @@ TEST(PositionTests, PositionEqualOperator) {
 	EXPECT_FALSE(Position("C2") == Position(3, 2));
 	EXPECT_FALSE(Position("A1") == Position(1, 1));
 
-	EXPECT_EQ(Position("A2") == Position(0, 1), !(Position("A2") != Position(0, 1)));
+	EXPECT_TRUE(Position("A2") == Position(0, 1));
+	EXPECT_TRUE(!(Position("A2") != Position(0, 1)));
 }

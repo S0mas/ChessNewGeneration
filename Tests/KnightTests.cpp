@@ -2,7 +2,7 @@
 #include "PieceTestsHead.h"
 
 class KnightTests : public PieceTests {};
-TEST(KnightTests, validMoves) {
+TEST_F(KnightTests, validMoves) {
 	Knight knight(Position("C4"));
 	EXPECT_TRUE(knight.isConsistentWithMoveRules(Position("B6")));
 	EXPECT_TRUE(knight.isConsistentWithMoveRules(Position("D6")));
@@ -13,7 +13,7 @@ TEST(KnightTests, validMoves) {
 	EXPECT_TRUE(knight.isConsistentWithMoveRules(Position("A3")));
 	EXPECT_TRUE(knight.isConsistentWithMoveRules(Position("A5")));
 }
-TEST(KnightTests, invalidMoves) {
+TEST_F(KnightTests, invalidMoves) {
 	Knight knight(Position("C4"));
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("C7")));
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("D5")));
@@ -26,7 +26,7 @@ TEST(KnightTests, invalidMoves) {
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("G4")));
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("H8")));
 }
-TEST(KnightTests, moveUsesMoveRulesTests) {
+TEST_F(KnightTests, moveUsesMoveRules) {
 	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
@@ -34,7 +34,7 @@ TEST(KnightTests, moveUsesMoveRulesTests) {
 	knight.move(newPosition);
 	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
 }
-TEST(KnightTests, attackUsesMoveRulesTests) {
+TEST_F(KnightTests, attackUsesMoveRules) {
 	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
@@ -42,11 +42,11 @@ TEST(KnightTests, attackUsesMoveRulesTests) {
 	knight.attack(newPosition);
 	ASSERT_WAS_CALLED(knight.isConsistentWithAttackRules(newPosition));
 }
-TEST(KnightTests, attackRulesUsesMoveRules) {
+TEST_F(KnightTests, attackRulesUsesMoveRules) {
 	Knight knight(Position("C4"));
 	const Position newPosition("B3");
 
 	WHEN_CALLED(knight.isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = knight.isConsistentWithAttackRules(newPosition);
+	knight.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
 }

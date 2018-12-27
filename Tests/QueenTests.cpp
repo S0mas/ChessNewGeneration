@@ -2,8 +2,8 @@
 #include "PieceTestsHead.h"
 
 class QueenTests : public PieceTests {};
-TEST(QueenTests, validMoves) {
-	Queen queen(Position("C4"));
+TEST_F(QueenTests, validMoves) {
+	const Queen queen(Position("C4"));
 	EXPECT_TRUE(queen.isConsistentWithMoveRules(Position("A4")));
 	EXPECT_TRUE(queen.isConsistentWithMoveRules(Position("B4")));
 	EXPECT_TRUE(queen.isConsistentWithMoveRules(Position("D4")));
@@ -30,8 +30,8 @@ TEST(QueenTests, validMoves) {
 	EXPECT_TRUE(queen.isConsistentWithMoveRules(Position("E2")));
 	EXPECT_TRUE(queen.isConsistentWithMoveRules(Position("F1")));
 }
-TEST(QueenTests, invalidMoves) {
-	Queen queen(Position("C4"));
+TEST_F(QueenTests, invalidMoves) {
+	const Queen queen(Position("C4"));
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("A1")));
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("B1")));
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("B2")));
@@ -42,7 +42,7 @@ TEST(QueenTests, invalidMoves) {
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("F2")));
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("D6")));
 }
-TEST(QueenTests, moveUsesMoveRulesTests) {
+TEST_F(QueenTests, moveUsesMoveRules) {
 	Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
@@ -50,7 +50,7 @@ TEST(QueenTests, moveUsesMoveRulesTests) {
 	queen.move(newPosition);
 	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
 }
-TEST(QueenTests, attackUsesMoveRulesTests) {
+TEST_F(QueenTests, attackUsesMoveRules) {
 	Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
@@ -58,11 +58,11 @@ TEST(QueenTests, attackUsesMoveRulesTests) {
 	queen.attack(newPosition);
 	ASSERT_WAS_CALLED(queen.isConsistentWithAttackRules(newPosition));
 }
-TEST(QueenTests, attackRulesUsesMoveRules) {
-	Queen queen(Position("C4"));
+TEST_F(QueenTests, attackRulesUsesMoveRules) {
+	const Queen queen(Position("C4"));
 	const Position newPosition("B3");
 
 	WHEN_CALLED(queen.isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = queen.isConsistentWithAttackRules(newPosition);
+	queen.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
 }

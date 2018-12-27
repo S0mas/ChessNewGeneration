@@ -2,7 +2,7 @@
 #include "PieceTestsHead.h"
 
 class BishopTests : public PieceTests {};
-TEST(BishopTests, validMoves) {
+TEST_F(BishopTests, validMoves) {
 	Bishop bishop(Position("C4"));
 	EXPECT_TRUE(bishop.isConsistentWithMoveRules(Position("A2")));
 	EXPECT_TRUE(bishop.isConsistentWithMoveRules(Position("B3")));
@@ -16,7 +16,7 @@ TEST(BishopTests, validMoves) {
 	EXPECT_TRUE(bishop.isConsistentWithMoveRules(Position("E2")));
 	EXPECT_TRUE(bishop.isConsistentWithMoveRules(Position("F1")));
 }
-TEST(BishopTests, invalidMoves) {
+TEST_F(BishopTests, invalidMoves) {
 	Bishop bishop(Position("C4"));
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("D6")));
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("D2")));
@@ -29,7 +29,7 @@ TEST(BishopTests, invalidMoves) {
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("G4")));
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("C8")));
 }
-TEST(BishopTests, moveUsesMoveRulesTests) {
+TEST_F(BishopTests, moveUsesMoveRules) {
 	Bishop bishop(Position("C4"));
 	const Position newPosition("B3");
 
@@ -37,7 +37,7 @@ TEST(BishopTests, moveUsesMoveRulesTests) {
 	bishop.move(newPosition);
 	ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
 }
-TEST(BishopTests, attackUsesMoveRulesTests) {
+TEST_F(BishopTests, attackUsesAttackRules) {
 	Bishop bishop(Position("C4"));
 	const Position newPosition("B3");
 
@@ -45,26 +45,25 @@ TEST(BishopTests, attackUsesMoveRulesTests) {
 	bishop.attack(newPosition);
 	ASSERT_WAS_CALLED(bishop.isConsistentWithAttackRules(newPosition));
 }
-TEST(BishopTests, attackRulesUsesMoveRules) {
+
+TEST_F(BishopTests, attackRulesUsesMoveRules) {
 	Bishop bishop(Position("C4"));
 	const Position newPosition("B3");
 
 	WHEN_CALLED(bishop.isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = bishop.isConsistentWithAttackRules(newPosition);
+	bishop.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
 }
-TEST(BishopTests, checkRoute) {
+TEST_F(BishopTests, checkRoute) {
 	Bishop bishop(Position("C4"));
 
 	const auto& route = bishop.getRoute(Position("A2"));
 	ASSERT_EQ(route.size(), 1);
 	EXPECT_EQ(route[0], Position("B3"));
 	
-
 	const auto& route2 = bishop.getRoute(Position("G8"));
 	ASSERT_EQ(route2.size(), 3);
 	EXPECT_EQ(route2[0], Position("D5"));
 	EXPECT_EQ(route2[1], Position("E6"));
 	EXPECT_EQ(route2[2], Position("F7"));
-
 }

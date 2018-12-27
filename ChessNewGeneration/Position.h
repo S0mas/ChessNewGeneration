@@ -2,6 +2,7 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <ostream>
 
 class Position;
 constexpr bool operator==(const Position &lhs, const Position &rhs) noexcept;
@@ -114,4 +115,9 @@ constexpr bool operator==(const Position &lhs, const Position &rhs) noexcept {
 
 constexpr bool operator!=(const Position &lhs, const Position &rhs) noexcept {
 	return !(lhs == rhs);
+}
+
+inline std::ostream& operator<<(std::ostream& out, const Position& position) noexcept {
+	out << position.toString() << std::endl;
+	return out;
 }

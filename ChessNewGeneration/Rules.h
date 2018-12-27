@@ -1,8 +1,7 @@
 #pragma once
-#include <typeindex>
 #include <vector>
 #include <algorithm>
-#include "ChessBoard.h"
+#include "Chessboard.h"
 
 class Rules {
 
@@ -23,29 +22,23 @@ class Rules {
 		return piece.getOwner() == activePlayer;
 	}
 
-	static bool isThereCollisions(const std::vector<Position>& route, const ChessBoard& chessboard) {
-		return route.end() != std::find_if(route.begin(), route.end(), [&chessboard](const Position& position) { 
-			return chessboard.isPositionOccupied(position); });
+	static bool isAttackLegal(const Piece& attacker, const Piece& target, const ChessBoard& chessboard) {
+		return !target.isKing() && isAttackPossible(attacker, target, chessboard);
 	}
 
-	static bool isAttackLegal(const Piece& attacker, const std::unique_ptr<Piece>& target, const ChessBoard& chessboard) {
-		return !target->isKing() && isAttackPossible(attacker, target, chessboard);
-	}
-
-	static bool isAttackPossible(const Piece& attacker, const std::unique_ptr<Piece>& target, const ChessBoard& chessboard) {
-		return attacker.getOwner() != target->getOwner() && attacker.isConsistentWithAttackRules(target->getPosition())
-			&& !isThereCollisions(attacker.getRoute(target->getPosition()), chessboard);
+	static bool isAttackPossible(const Piece& attacker, const Piece& target, const ChessBoard& chessboard) {
+		return attacker.getOwner() != target.getOwner() && attacker.isConsistentWithAttackRules(target.getPosition()) && !chessboard.isThereCollision(attacker.getRoute(target.getPosition()));
 	}
 
 	static bool isMovePossible(const Piece& mover, const Position& destination, const ChessBoard& chessboard) {
-		return mover.isConsistentWithMoveRules(destination) && !chessboard.isPositionOccupied(destination) && !isThereCollisions(mover.getRoute(destination), chessboard);
+		return mover.isConsistentWithMoveRules(destination) && !chessboard.isPositionOccupied(destination) && !chessboard.isThereCollision(mover.getRoute(destination));
 	}
 
 	static bool isThereCheck(const Player& playerToVerify, const ChessBoard& chessboard) {
 		const auto& king = chessboard.findKing(playerToVerify);
 		const auto& pieces = chessboard.getPieces();
 		return std::find_if(pieces.cbegin(), pieces.cend(), [&king, &chessboard](const auto& piece) {
-			return isAttackPossible(*piece, *king, chessboard);
+			return isAttackPossible(*piece, **king, chessboard);
 		}) == pieces.cend();
 	}
 
@@ -59,7 +52,7 @@ class Rules {
 			if (target == chessboard.getPieces().cend())
 				isValid = isMovePossible(piece, destination, chessboard);
 			else
-				isValid = isAttackPossible(piece, *target, chessboard);
+				isValid = isAttackPossible(piece, **target, chessboard);
 			if (isValid)
 				validMoves.push_back(destination);
 		}
@@ -73,7 +66,7 @@ public:
 		auto const& pieceToAttack = chessboard.getPieceByPosition(simpleMove.destination_);
 
 		auto const& isLegal = (pieceToAttack == chessboard.notFound()) ? isMovePossible(**pieceToMove, simpleMove.destination_, chessboard)
-			: isAttackLegal(**pieceToMove, *pieceToAttack, chessboard);
+			: isAttackLegal(**pieceToMove, **pieceToAttack, chessboard);
 		
 		auto result = false;
 		if (isLegal) {

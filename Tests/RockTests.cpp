@@ -2,16 +2,16 @@
 #include "PieceTestsHead.h"
 
 class RockTests : public PieceTests {};
-TEST(RockTests, validMoves) {
-	Rock rock(Position("C4"));
+TEST_F(RockTests, validMoves) {
+	const Rock rock(Position("C4"));
 	for (const auto& column : Position::getAllColumns())
 		EXPECT_TRUE(rock.isConsistentWithMoveRules(Position(column+"4")));
 
 	for (const auto& row : Position::getAllRows()) 
 		EXPECT_TRUE(rock.isConsistentWithMoveRules(Position("C" + row)));
 }
-TEST(RockTests, invalidMoves) {
-	Rock rock(Position("C4"));
+TEST_F(RockTests, invalidMoves) {
+	const Rock rock(Position("C4"));
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("D7")));
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("D5")));
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("D3")));
@@ -23,7 +23,7 @@ TEST(RockTests, invalidMoves) {
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("H3")));
 	EXPECT_FALSE(rock.isConsistentWithMoveRules(Position("G5")));
 }
-TEST(RockTests, moveUsesMoveRulesTests) {
+TEST_F(RockTests, moveUsesMoveRules) {
 	Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
@@ -31,7 +31,7 @@ TEST(RockTests, moveUsesMoveRulesTests) {
 	rock.move(newPosition);
 	ASSERT_WAS_CALLED(rock.isConsistentWithMoveRules(newPosition));
 }
-TEST(RockTests, attackUsesMoveRulesTests) {
+TEST_F(RockTests, attackUsesMoveRules) {
 	Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
@@ -39,11 +39,11 @@ TEST(RockTests, attackUsesMoveRulesTests) {
 	rock.attack(newPosition);
 	ASSERT_WAS_CALLED(rock.isConsistentWithAttackRules(newPosition));
 }
-TEST(RockTests, attackRulesUsesMoveRules) {
-	Rock rock(Position("C4"));
+TEST_F(RockTests, attackRulesUsesMoveRules) {
+	const Rock rock(Position("C4"));
 	const Position newPosition("B3");
 
 	WHEN_CALLED(rock.isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = rock.isConsistentWithAttackRules(newPosition);
+	rock.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(rock.isConsistentWithMoveRules(newPosition));
 }

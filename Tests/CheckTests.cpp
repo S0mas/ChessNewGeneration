@@ -12,7 +12,7 @@ public:
 	}
 };
 
-/*TEST(CheckTests, noCheck) {
+/*TEST_F(CheckTests, noCheck) {
 	ChessBoard cbMock;
 	King king(Position("A1"));
 	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
@@ -21,7 +21,7 @@ public:
 	EXPECT_FALSE(Rules::isThereCheck(Player::White, cbMock));
 }*/
 
-/*TEST(CheckTests, check) {
+/*TEST_F(CheckTests, check) {
 	ChessBoard cbMock;
 	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
 		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(true);

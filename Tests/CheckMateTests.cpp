@@ -12,22 +12,16 @@ public:
 	}
 };
 
-TEST(CheckMateTests, whiteIsMated) {
+TEST_F(CheckMateTests, whiteIsMated) {
 	ChessBoard cbMock;
-	std::vector<Position> moves;
-	moves.push_back(Position("A1"));
-	WHEN_CALLED(Rules::isLegalMove).Return(false);
-	PRIVATE_WHEN_CALLED(_, Rules::getAllValidMovesForPiece, TYPEOF(const Piece&), TYPEOF(const ChessBoard&)).Return(BY_VAL(moves));
+	WHEN_CALLED(Rules::isLegalMove, TYPEOF(const Player&), TYPEOF(const SimpleMove&), TYPEOF(ChessBoard&)).Return(false);
 
 	EXPECT_TRUE(Rules::isThereCheckMate(Player::White, cbMock));
 }
 
-TEST(CheckMateTests, whiteIsNotMated) {
+TEST_F(CheckMateTests, whiteIsNotMated) {
 	ChessBoard cbMock;
-	std::vector<Position> moves;
-	moves.push_back(Position("A1"));
-	WHEN_CALLED(Rules::isLegalMove).Return(true);
-	PRIVATE_WHEN_CALLED(_, Rules::getAllValidMovesForPiece, TYPEOF(const Piece&), TYPEOF(const ChessBoard&)).Return(BY_VAL(moves));
+	WHEN_CALLED(Rules::isLegalMove, TYPEOF(const Player&), TYPEOF(const SimpleMove&), TYPEOF(ChessBoard&)).Return(true);
 
 	EXPECT_TRUE(Rules::isThereCheckMate(Player::White, cbMock));
 }

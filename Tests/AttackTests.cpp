@@ -8,101 +8,71 @@
 
 class AttackTests : public ::testing::Test {
 public:
-	void TearDown() final {
+	void TearDown() override {
 		ISOLATOR_CLEANUP();
 	}
 };
-
-TEST(AttackTests, legalAttack) {
+struct AttackTestingObjects {
 	ChessBoard cbMock;
+	Rock attacker{ Rock(Position("F8")) };
+	Bishop targetWhite{ Bishop(Position("A1")) };
+	Bishop targetBlack{ Bishop(Position("A1"), Player::Black) };
+	King targetKing{ King(Position("A1"), Player::Black) };
+};
+
+TEST_F(AttackTests, legalAttack) {
+	const AttackTestingObjects objects;
 	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
 		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(true);
 
-	std::unique_ptr<Piece> rock = std::make_unique<Rock>(Position("F8"));
-	Bishop bishop(Position("A1"), Player::Black);
-	EXPECT_TRUE(Rules::isAttackLegal(bishop, rock, cbMock));
+	EXPECT_TRUE(Rules::isAttackLegal(objects.attacker, objects.targetBlack, objects.cbMock));
 }
 
-TEST(AttackTests, notLegalAttack_cantAttackKing) {
-	ChessBoard cbMock;
+TEST_F(AttackTests, notLegalAttack_cantAttackKing) {
+	const AttackTestingObjects objects;
 	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
 		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(true);
 
-	Bishop bishop(Position("A1"), Player::Black);
-	std::unique_ptr<Piece> king = std::make_unique<King>(Position("F8"));
-
-	EXPECT_FALSE(Rules::isAttackLegal(bishop, king, cbMock));
+	EXPECT_FALSE(Rules::isAttackLegal(objects.attacker, objects.targetKing, objects.cbMock));
 }
 
-TEST(AttackTests, notLegalAttack_impossible) {
-	ChessBoard cbMock;
+TEST_F(AttackTests, notLegalAttack_impossible) {
+	const AttackTestingObjects objects;
 	PRIVATE_WHEN_CALLED(_, Rules::isAttackPossible,
 		TYPEOF(const Piece&), TYPEOF(const std::unique_ptr<Piece>&), TYPEOF(const ChessBoard&)).Return(false);
 
-	Bishop bishop(Position("A1"), Player::Black);
-	std::unique_ptr<Piece> king = std::make_unique<King>(Position("F8"));
-
-	EXPECT_FALSE(Rules::isAttackLegal(bishop, king, cbMock));
+	EXPECT_FALSE(Rules::isAttackLegal(objects.attacker, objects.targetBlack, objects.cbMock));
 }
 
-TEST(AttackTests, possibleAttack) {
-	ChessBoard cbMock;
-	std::unique_ptr<Piece> rock = std::make_unique<Rock>(Position("D3"));
-	std::unique_ptr<Piece> knigth = std::make_unique<Pawn>(Position("E6"), Player::Black);
+TEST_F(AttackTests, possibleAttack) {
+	const AttackTestingObjects objects;
 
-	PRIVATE_WHEN_CALLED(_, Rules::isThereCollisions,
-		TYPEOF(const std::vector<Position>&), TYPEOF(const ChessBoard&)).Return(false);
-	WHEN_CALLED(rock->isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
+	WHEN_CALLED(objects.cbMock.isThereCollision(ANY_REF(std::vector<Position>))).Return(false);
+	WHEN_CALLED(objects.attacker.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
 
-	std::cout << Rules::isAttackPossible(*rock, knigth, cbMock);
+	EXPECT_TRUE(Rules::isAttackPossible(objects.attacker, objects.targetBlack, objects.cbMock));
 }
 
-TEST(AttackTests, impossibleAttack_KingAsTarget) {
-	ChessBoard cbMock;
+TEST_F(AttackTests, impossibleAttack_invalidPath) {
+	const AttackTestingObjects objects;
+	WHEN_CALLED(objects.cbMock.isThereCollision(ANY_REF(std::vector<Position>))).Return(false);
+	WHEN_CALLED(objects.attacker.isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
 
-	std::unique_ptr<Piece> rock = std::make_unique<Rock>(Position("D2"), Player::Black);
-	std::unique_ptr<Piece> king = std::make_unique<King>(Position("F8"));
-
-	PRIVATE_WHEN_CALLED(_, Rules::isThereCollisions,
-		TYPEOF(const std::vector<Position>&), TYPEOF(const ChessBoard&)).Return(false);
-	WHEN_CALLED(rock->isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
-
-	EXPECT_FALSE(Rules::isAttackPossible(*rock, king, cbMock));
+	EXPECT_FALSE(Rules::isAttackPossible(objects.attacker, objects.targetBlack, objects.cbMock));
 }
 
-TEST(AttackTests, impossibleAttack_invalidPath) {
-	ChessBoard cbMock;
+TEST_F(AttackTests, impossibleAttack_collision) {
+	const AttackTestingObjects objects;
+	WHEN_CALLED(objects.cbMock.isThereCollision(ANY_REF(std::vector<Position>))).Return(true);
+	WHEN_CALLED(objects.attacker.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
 
-	std::unique_ptr<Piece> rock = std::make_unique<Rock>(Position("D2"), Player::Black);
-	std::unique_ptr<Piece> pawn = std::make_unique<Pawn>(Position("F8"));
-
-	PRIVATE_WHEN_CALLED(_, Rules::isThereCollisions,
-		TYPEOF(const std::vector<Position>&), TYPEOF(const ChessBoard&)).Return(false);
-	WHEN_CALLED(rock->isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
-
-	EXPECT_FALSE(Rules::isAttackPossible(*rock, pawn, cbMock));
+	EXPECT_FALSE(Rules::isAttackPossible(objects.attacker, objects.targetBlack, objects.cbMock));
 }
 
-TEST(AttackTests, impossibleAttack_collision) {
-	ChessBoard cbMock;
-	Rock rock(Position("D2"), Player::Black);
-	std::unique_ptr<Piece> pawn = std::make_unique<Pawn>(Position("F8"));
+TEST_F(AttackTests, impossibleAttack_sameOwner) {
+	const AttackTestingObjects objects;
+	WHEN_CALLED(objects.cbMock.isThereCollision(ANY_REF(std::vector<Position>))).Return(false);
+	WHEN_CALLED(objects.attacker.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
 
-	PRIVATE_WHEN_CALLED(_, Rules::isThereCollisions,
-		TYPEOF(const std::vector<Position>&), TYPEOF(const ChessBoard&)).Return(true);
-	WHEN_CALLED(rock.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
-
-	EXPECT_FALSE(Rules::isAttackPossible(rock, pawn, cbMock));
-}
-
-TEST(AttackTests, impossibleAttack_sameOwner) {
-	ChessBoard cbMock;
-	Rock rock(Position("D2"));
-	std::unique_ptr<Piece> pawn = std::make_unique<Pawn>(Position("F8"));
-
-	PRIVATE_WHEN_CALLED(_, Rules::isThereCollisions,
-		TYPEOF(const std::vector<Position>&), TYPEOF(const ChessBoard&)).Return(true);
-	WHEN_CALLED(rock.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
-
-	EXPECT_FALSE(Rules::isAttackPossible(rock, pawn, cbMock));
+	EXPECT_FALSE(Rules::isAttackPossible(objects.attacker, objects.targetWhite, objects.cbMock));
 }

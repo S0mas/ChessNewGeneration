@@ -13,37 +13,41 @@ public:
 	}
 };
 
-TEST(PieceTests, positionsUpdateAfterValidMove) {
+TEST_F(PieceTests, positionsUpdateAfterValidMove) {
 	PieceMock fakePiece;
 	const Position newPosition("B4");
 	fakePiece.move(Position(newPosition));
 	EXPECT_EQ(fakePiece.getPosition(), newPosition);
 }
 
-TEST(PieceTests, positionsNotUpdateAfterInvalidMove) {
+TEST_F(PieceTests, positionsNotUpdateAfterInvalidMove) {
 	PieceMock fakePiece;
 	const auto oldPosition = fakePiece.getPosition();
 	fakePiece.move(Position("D4"));
 	EXPECT_EQ(fakePiece.getPosition(), oldPosition);
 }
-TEST(PieceTests, positionsUpdateAfterValidAttack) {
+TEST_F(PieceTests, positionsUpdateAfterValidAttack) {
 	PieceMock fakePiece;
 	const Position newPosition("B4");
 	fakePiece.attack(Position(newPosition));
 	EXPECT_EQ(fakePiece.getPosition(), newPosition);
 }
 
-TEST(PieceTests, positionsNotUpdateAfterInvalidAttack) {
+TEST_F(PieceTests, positionsNotUpdateAfterInvalidAttack) {
 	PieceMock fakePiece;
 	const auto oldPosition = fakePiece.getPosition();
 	fakePiece.attack(Position("D4"));
 	EXPECT_EQ(fakePiece.getPosition(), oldPosition);
 }
 
-TEST(PieceTests, isKing) {
-	std::unique_ptr<Piece> king = std::make_unique<King>(Position("A1"));
-	std::unique_ptr<Piece> bishop = std::make_unique<Bishop>(Position("A1"));
+TEST_F(PieceTests, isKing) {
+	const King king(Position("A1"));
 
-	EXPECT_TRUE(king->isKing());
-	EXPECT_FALSE(bishop->isKing());
+	EXPECT_TRUE(king.isKing());
+}
+
+TEST_F(PieceTests, isNotKing) {
+	const Bishop bishop(Position("A1"));
+
+	EXPECT_FALSE(bishop.isKing());
 }

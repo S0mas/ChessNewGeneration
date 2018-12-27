@@ -10,14 +10,12 @@ struct SimpleMove {
 };
 
 struct Move {
-	Move(const Position& origin, const Position destination, Piece* movedPiece, const bool wasPieceKilled = false) :
-		origin_(origin),
-		destination_(destination),
+	Move(const SimpleMove& move, Piece* movedPiece, const bool wasPieceKilled = false) :
+		move_(move),
 		movedPiece_(movedPiece),
 		wasPiecekilled_(wasPieceKilled) {}
 
-	const Position origin_;
-	const Position destination_;
+	const SimpleMove move_;
 	Piece* const movedPiece_;// no ownership
 	bool wasPiecekilled_;
 };
@@ -49,10 +47,10 @@ public:
 		buildPieces(Player::Black, posInArray);
 	};
 
-	const auto cbegin() const noexcept {
+	auto cbegin() const noexcept {
 		return pieces_.cbegin();
 	}
-	const auto cend() const noexcept {
+	auto cend() const noexcept {
 		return pieces_.cend() - deadPiecesCounter;
 	}
 
@@ -65,8 +63,10 @@ public:
 	}
 
 	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) {
-		++deadPiecesCounter;
-		pieceToKill->swap(pieces_.at(pieces_.size()-deadPiecesCounter));
+		if(pieceToKill != cend()) {
+			++deadPiecesCounter;
+			pieceToKill->swap(pieces_.at(pieces_.size() - deadPiecesCounter));
+		}
 	}
 
 	void resurectLastKilledPiece() {
@@ -79,7 +79,7 @@ class ChessBoard {
 	std::stack<Move> moves_;
 public:
 	auto findKing(const Player& owner) const noexcept {
-		return  std::find_if(pieces_.cbegin(), pieces_.cend(), [&owner](const auto& piece) {
+		return std::find_if(pieces_.cbegin(), pieces_.cend(), [&owner](const auto& piece) {
 			return  piece->getOwner() == owner && piece->isKing();
 		});
 	}
@@ -90,7 +90,7 @@ public:
 		});
 	}
 
-	const auto notFound() const noexcept {
+	auto notFound() const noexcept {
 		return pieces_.cend();
 	}
 
@@ -98,31 +98,34 @@ public:
 		return notFound() != getPieceByPosition(position);
 	}
 
-	void doMove(const SimpleMove& simpleMove) {
-		const auto& origin = simpleMove.origin_;
-		const auto& destination = simpleMove.destination_;
-		Piece* movedPiece = getPieceByPosition(origin)->get();
-		movedPiece->setPosition(destination);
+	bool isThereCollision(const std::vector<Position>& route) const noexcept {
+		return route.end() != std::find_if(route.begin(), route.end(), [this](const Position& position){ return isPositionOccupied(position);});
+	}
 
-		auto pieceToKill = std::find_if(pieces_.begin(), pieces_.end(), [&destination](const auto& piece) {
-			return piece->getPosition() == destination;
+	void doMove(const SimpleMove& move) {
+		auto pieceToKill = std::find_if(pieces_.begin(), pieces_.end(), [&move](const auto& piece) {
+			return piece->getPosition() == move.destination_;
 		});
-		if (pieceToKill == notFound())
-			moves_.emplace(Move(origin, destination, movedPiece));
-		else {
-			pieces_.killPiece(pieceToKill);
-			moves_.emplace(Move(origin, destination, movedPiece, true));
-		}
+
+		auto movedPiece = getPieceByPosition(move.origin_)->get();
+		movedPiece->setPosition(move.destination_);
+
+		pieces_.killPiece(pieceToKill);
+		addMove(Move(move, movedPiece, pieceToKill != notFound()));
 	}
 
 	void undoMove() {
 		if(!moves_.empty()) {
 			const auto& moveToUndo = moves_.top();
-			moveToUndo.movedPiece_->setPosition(moveToUndo.origin_);
+			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
 			if (moveToUndo.wasPiecekilled_)
 				pieces_.resurectLastKilledPiece();
 			moves_.pop();
 		}
+	}
+
+	void addMove(const Move& move) noexcept {
+		moves_.push(move);
 	}
 
 	auto& getPieces() noexcept {

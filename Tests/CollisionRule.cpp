@@ -12,20 +12,20 @@ public:
 	}
 };
 
-TEST(CollisionTests, noCollision) {
+TEST_F(CollisionTests, noCollision) {
 	ChessBoard cbMock;
 	std::vector<Position> dummyRoute;
 	dummyRoute.push_back(Position("D4"));
-	dummyRoute.push_back(Position("D5"));
+	WHEN_CALLED(cbMock.isPositionOccupied(ANY_REF(Position))).Return(false);
 
-	EXPECT_FALSE(Rules::isThereCollisions(dummyRoute, cbMock));
+	EXPECT_FALSE(cbMock.isThereCollision(dummyRoute));
 }
 
-TEST(CollisionTests, collision) {
+TEST_F(CollisionTests, collision) {
 	ChessBoard cbMock;
 	std::vector<Position> dummyRoute;
-	dummyRoute.push_back(Position("D1"));
-	dummyRoute.push_back(Position("D2"));
+	dummyRoute.push_back(Position("D4"));
+	WHEN_CALLED(cbMock.isPositionOccupied(ANY_REF(Position))).Return(true);
 
-	EXPECT_TRUE(Rules::isThereCollisions(dummyRoute, cbMock));
+	EXPECT_TRUE(cbMock.isThereCollision(dummyRoute));
 }

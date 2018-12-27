@@ -3,7 +3,7 @@
 
 class KingTests : public PieceTests {};
 
-TEST(KingTests, validMoves) {
+TEST_F(KingTests, validMoves) {
 	King king(Position("C4"));
 
 	EXPECT_TRUE(king.isConsistentWithMoveRules(Position("C3")));
@@ -16,7 +16,7 @@ TEST(KingTests, validMoves) {
 	EXPECT_TRUE(king.isConsistentWithMoveRules(Position("D5")));
 }
 
-TEST(KingTests, invalidMoves) {
+TEST_F(KingTests, invalidMoves) {
 	King king(Position("C4"));
 
 	EXPECT_FALSE(king.isConsistentWithMoveRules(Position("A1")));
@@ -29,7 +29,7 @@ TEST(KingTests, invalidMoves) {
 	EXPECT_FALSE(king.isConsistentWithMoveRules(Position("D6")));
 }
 
-TEST(KingTests, moveUsesMoveRulesTests) {
+TEST_F(KingTests, moveUsesMoveRules) {
 	King king(Position("C4"));
 	const Position newPosition("B3");
 
@@ -38,7 +38,7 @@ TEST(KingTests, moveUsesMoveRulesTests) {
 	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
 }
 
-TEST(KingTests, attackUsesMoveRulesTests) {
+TEST_F(KingTests, attackUsesAttackRules) {
 	King king(Position("C4"));
 	const Position newPosition("B3");
 
@@ -47,11 +47,11 @@ TEST(KingTests, attackUsesMoveRulesTests) {
 	ASSERT_WAS_CALLED(king.isConsistentWithAttackRules(newPosition));
 }
 
-TEST(KingTests, attackRulesUsesMoveRules) {
+TEST_F(KingTests, attackRulesUsesMoveRules) {
 	King king(Position("C4"));
 	const Position newPosition("B3");
 
 	WHEN_CALLED(king.isConsistentWithMoveRules(newPosition)).Return(true);
-	auto p = king.isConsistentWithAttackRules(newPosition);
+	king.isConsistentWithAttackRules(newPosition);
 	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
 }
