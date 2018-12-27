@@ -29,11 +29,8 @@
     <ClCompile Include="PieceTestsHead.h">
       <Filter>PiecesTests</Filter>
     </ClCompile>
-    <ClCompile Include="AttackTests.cpp" />
-    <ClCompile Include="CollisionRule.cpp" />
-    <ClCompile Include="CheckTests.cpp" />
-    <ClCompile Include="CheckMateTests.cpp" />
     <ClCompile Include="ChessBoardTests.cpp" />
+    <ClCompile Include="ChessGameTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

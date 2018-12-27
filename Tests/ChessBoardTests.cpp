@@ -28,6 +28,13 @@ TEST_F(ChessBoardTests, findKing) {
 	EXPECT_EQ((*king)->getOwner(), Player::White);
 }
 
+TEST_F(ChessBoardTests, findKing_black) {
+	ChessBoard cb;
+	const auto& king = cb.findKing(Player::Black);
+	EXPECT_EQ((*king)->getPosition(), Position("E8"));
+	EXPECT_EQ((*king)->getOwner(), Player::Black);
+}
+
 TEST_F(ChessBoardTests, getPieceByPosition) {
 	ChessBoard cb;
 	auto king = cb.getPieceByPosition(Position("E1"));
@@ -78,4 +85,10 @@ TEST_F(ChessBoardTests, getPieces) {
 	const auto& begin = cb.getPieces().cbegin();
 	const auto& end = cb.getPieces().cend();
 	EXPECT_EQ(std::distance(begin, end), 32);
+}
+
+TEST_F(ChessBoardTests, toString) {
+	ChessBoard cb;
+	std::cout << cb.toString() << std::endl;
+	getchar();
 }

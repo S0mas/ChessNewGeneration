@@ -26,18 +26,18 @@ class Pieces {
 
 	void buildPieces(const Player& owner, int& posInArray) {
 		std::string rowNumber = (owner == Player::White) ? "1" : "8";
-		pieces_.at(posInArray++) = std::make_unique<King>(Position("E" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Queen>(Position("D" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("A" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("H" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("B" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("G" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("C" + rowNumber));
-		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("F" + rowNumber));
+		pieces_.at(posInArray++) = std::make_unique<King>(Position("E" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Queen>(Position("D" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("A" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("H" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("B" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("G" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("C" + rowNumber), owner);
+		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("F" + rowNumber), owner);
 
 		rowNumber = (owner == Player::White) ? "2" : "7";
 		for (const auto& column : Position::getAllColumns()) {
-			pieces_.at(posInArray++) = std::make_unique<Bishop>(Position(column + rowNumber));
+			pieces_.at(posInArray++) = std::make_unique<Pawn>(Position(column + rowNumber), owner);
 		}
 	}
 public:
@@ -134,5 +134,22 @@ public:
 
 	const auto& getPieces() const noexcept {
 		return pieces_;
+	}
+
+	std::string toString() const noexcept {
+		std::string result = "\n   A  B  C  D  E  F  G  H  ";
+		for(const auto& row : Position::getAllRows()) {
+			result += "\n  ________________________\n";
+			result += "\n" + row + " ";
+			for (const auto& column : Position::getAllColumns()) {
+				const auto& piece = getPieceByPosition(Position(column + row));
+				if(piece == notFound())
+					result += "  ";
+				else
+					result += (*piece)->toString();
+				result += " ";
+			}
+		}
+		return result;
 	}
 };
