@@ -43,6 +43,8 @@ public:
 		return false;
 	}
 
+	virtual std::unique_ptr<Piece> clone() const = 0;
+
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
 	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept {
 		return isConsistentWithMoveRules(destPosition);
@@ -56,8 +58,6 @@ public:
 				possibleMoves.push_back(position);
 		return possibleMoves;
 	}
-
-	virtual std::string toString() const noexcept { return "ABSTRACT_PIECE"; };
 
 	class InvalidDestination final : public std::exception {
 		const char* what() const noexcept final {
@@ -73,12 +73,12 @@ public:
 		return std::abs(position_.column_ - destPosition.column_) <= 1 && std::abs(position_.row_ - destPosition.row_) <= 1;
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("K") : std::string("k");
-	}
-
 	bool isKing() const noexcept final {
 		return true;
+	}
+
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<King>(*this);
 	}
 };
 
@@ -90,8 +90,8 @@ public:
 			std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("Q") : std::string("q");
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<Queen>(*this);
 	}
 };
 
@@ -102,8 +102,8 @@ public:
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_;
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("R") : std::string("r");
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<Rook>(*this);
 	}
 };
 
@@ -114,8 +114,8 @@ public:
 		return std::abs(position_.column_ - destPosition.column_) == std::abs(position_.row_ - destPosition.row_);
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("B") : std::string("b");
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<Bishop>(*this);
 	}
 };
 
@@ -131,8 +131,8 @@ public:
 		return std::vector<Position>();
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("N") : std::string("n");
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<Knight>(*this);
 	}
 };
 
@@ -147,7 +147,7 @@ public:
 		return position_.row_ + static_cast<int>(owner_) == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
 	}
 
-	std::string toString() const noexcept final {
-		return owner_ == Player::White ? std::string("P") : std::string("p");
+	std::unique_ptr<Piece> clone() const final {
+		return std::make_unique<Pawn>(*this);
 	}
 };

@@ -41,10 +41,10 @@ class ChessPieces {
 	int deadPiecesCounter = 0;
 public:
 	ChessPieces() noexcept = default;
-	auto cbegin() const noexcept {
+	auto begin() const noexcept {
 		return pieces_.cbegin();
 	}
-	auto cend() const noexcept {
+	auto end() const noexcept {
 		return pieces_.cend() - deadPiecesCounter;
 	}
 
@@ -57,7 +57,7 @@ public:
 	}
 
 	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) noexcept {
-		if (pieceToKill != cend()) {
+		if (pieceToKill != end()) {
 			++deadPiecesCounter;
 			pieceToKill->swap(pieces_.at(pieces_.size() - deadPiecesCounter));
 		}

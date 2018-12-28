@@ -11,19 +11,19 @@ class ChessBoard {
 	std::stack<Move> moves_;
 public:
 	auto findKing(const Player& owner) const noexcept {
-		return std::find_if(pieces_.cbegin(), pieces_.cend(), [&owner](const auto& piece) {
+		return std::find_if(pieces_.begin(), pieces_.end(), [&owner](const auto& piece) {
 			return  piece->getOwner() == owner && piece->isKing();
 		});
 	}
 
 	auto getPieceByPosition(const Position& position) const noexcept {
-		return std::find_if(pieces_.cbegin(), pieces_.cend(), [&position](const auto& piece) {
+		return std::find_if(pieces_.begin(), pieces_.end(), [&position](const auto& piece) {
 			return piece->getPosition() == position; 
 		});
 	}
 
 	auto notFound() const noexcept {
-		return pieces_.cend();
+		return pieces_.end();
 	}
 
 	bool isPositionOccupied(const Position& position) const noexcept {

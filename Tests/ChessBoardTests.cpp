@@ -82,7 +82,7 @@ TEST_F(ChessBoardTests, undoMove) {
 
 TEST_F(ChessBoardTests, getPieces) {
 	ChessBoard cb;
-	const auto& begin = cb.getPieces().cbegin();
-	const auto& end = cb.getPieces().cend();
+	const auto& begin = cb.getPieces().begin();
+	const auto& end = cb.getPieces().end();
 	EXPECT_EQ(std::distance(begin, end), 32);
 }

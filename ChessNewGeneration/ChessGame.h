@@ -3,6 +3,11 @@
 #include <iostream>
 
 class ChessGame {
+protected:
+	ChessBoard chessboard_;
+	Player winner_;
+	Player activePlayer_ = Player::White;
+	Player waitingPlayer_ = Player::Black;
 #ifdef Tests
 	FRIEND_TEST(ChessGameTests, checkmate);
 	FRIEND_TEST(ChessGameTests, noCheckmate_stalemate);
@@ -54,7 +59,7 @@ class ChessGame {
 	bool isThereCheck(const Player& playerToVerify) const noexcept {
 		const auto& king = chessboard_.findKing(playerToVerify);
 		const auto& pieces = chessboard_.getPieces();
-		return pieces.cend() != std::find_if(pieces.cbegin(), pieces.cend(), [&king, this](const auto& piece) {
+		return pieces.end() != std::find_if(pieces.begin(), pieces.end(), [&king, this](const auto& piece) {
 			return isAttackPossible(*piece, **king);
 		});
 	}
@@ -139,38 +144,43 @@ class ChessGame {
 	}
 
 	bool isGameEnded() noexcept {
-		return isThereCheckmate();// && other stuff...;
-	}
-
-	int nextMove = 0;
-
-	SimpleMove requestMove() const noexcept {
-		std::string origin;
-		std::string destination;
-		std::cin >> origin;
-		std::cin >> destination;
-
-		return { Position(origin), Position(destination) };
-
+		return isThereCheckmate() || isThereStalemate();// && other stuff...;
 	}
 
 	SimpleMove requestValidMove() noexcept {
 		const auto& move = requestMove();
-		++nextMove;
 		return checkIfMoveIsLegal(move) ? move : requestValidMove();
 	}
+
+	virtual SimpleMove requestMove() const noexcept { throw std::exception(); };
 public:
-	ChessBoard chessboard_;
-	Player winner_;
-	Player activePlayer_ = Player::White;
-	Player waitingPlayer_ = Player::Black;
+	virtual ~ChessGame() = default;
 	void startGame() {
 		while (!isGameEnded()) {
-
 			chessboard_.doMove(requestValidMove());
 			std::swap(activePlayer_, waitingPlayer_);
 		}
 
 		winner_ = waitingPlayer_;
 	}
+
+	auto getPiecesState() const noexcept  {
+		std::vector<std::unique_ptr<Piece>> piecesCopy;
+		for(const auto& piece : chessboard_.getPieces())
+			piecesCopy.push_back(piece->clone());
+		
+		return piecesCopy;
+	}
 };
+
+//example use
+class ChessGameConsole final : public  ChessGame {
+	SimpleMove requestMove() const noexcept final {
+		std::string origin;
+		std::string destination;
+		std::cin >> origin;
+		std::cin >> destination;
+		return { Position(origin),  Position(destination) };
+	}
+};
+
