@@ -31,6 +31,7 @@
     </ClCompile>
     <ClCompile Include="ChessBoardTests.cpp" />
     <ClCompile Include="ChessGameTests.cpp" />
+    <ClCompile Include="ChessPieces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

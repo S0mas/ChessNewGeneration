@@ -3,7 +3,7 @@
 #include "Piece.h"
 
 class ChessPieces {
-	std::array<std::unique_ptr<Piece>, 32> pieces_ { 
+	std::array<std::unique_ptr<Piece>, 32> pieces_ {
 		std::make_unique<Rook>(Position("A1")),
 		std::make_unique<Knight>(Position("B1")),
 		std::make_unique<Bishop>(Position("C1")),
@@ -41,7 +41,6 @@ class ChessPieces {
 	int deadPiecesCounter = 0;
 public:
 	ChessPieces() noexcept = default;
-
 	auto cbegin() const noexcept {
 		return pieces_.cbegin();
 	}

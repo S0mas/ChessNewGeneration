@@ -39,6 +39,7 @@
     <ClCompile Include="BishopTests.cpp" />
     <ClCompile Include="ChessBoardTests.cpp" />
     <ClCompile Include="ChessGameTests.cpp" />
+    <ClCompile Include="ChessPieces.cpp" />
     <ClCompile Include="KingTests.cpp" />
     <ClCompile Include="KnightTests.cpp" />
     <ClCompile Include="PawnTests.cpp" />

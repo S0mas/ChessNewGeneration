@@ -63,7 +63,6 @@ class ChessGame {
 		return piece.getOwner() == activePlayer_;
 	}
 
-	//TODO: implement other rules
 	bool isConsistentWithOtherRules(const SimpleMove& move) noexcept {
 		//is there check after move
 		chessboard_.doMove(move);

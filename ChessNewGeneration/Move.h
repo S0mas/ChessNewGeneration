@@ -6,8 +6,8 @@ struct SimpleMove {
 	SimpleMove(const Position& origin, const Position& destination) : origin_(origin), destination_(destination) {
 		if (origin == destination) throw InvalidMoveSpecifiad();
 	}
-	Position origin_;
-	Position destination_;
+	const Position origin_;
+	const Position destination_;
 
 	class InvalidMoveSpecifiad final : public std::exception {
 		const char *what() const noexcept override {
@@ -17,12 +17,12 @@ struct SimpleMove {
 };
 
 struct Move {
-	Move(const SimpleMove& move, Piece* movedPiece, const bool wasPieceKilled = false) :
+	Move(const SimpleMove& move, Piece* const movedPiece, const bool wasPieceKilled = false) :
 		move_(move),
 		movedPiece_(movedPiece),
 		wasPiecekilled_(wasPieceKilled) {}
 
 	const SimpleMove move_;
 	Piece* const movedPiece_;// no ownership
-	bool wasPiecekilled_;
+	const bool wasPiecekilled_;
 };
