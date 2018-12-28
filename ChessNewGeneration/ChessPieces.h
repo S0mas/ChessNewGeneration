@@ -48,22 +48,27 @@ public:
 		return pieces_.cend() - deadPiecesCounter;
 	}
 
-	auto begin() noexcept {
-		return pieces_.begin();
-	}
+	void killPiece(const int pieceToKillPosition) noexcept {
 
-	auto end() noexcept {
-		return pieces_.end() - deadPiecesCounter;
-	}
-
-	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) noexcept {
-		if (pieceToKill != end()) {
+		if (pieceToKillPosition < piecesAlive()) {
 			++deadPiecesCounter;
-			pieceToKill->swap(pieces_.at(pieces_.size() - deadPiecesCounter));
+			std::swap(pieces_.at(pieceToKillPosition), pieces_.at(pieces_.size() - deadPiecesCounter));
 		}
 	}
 
 	void resurrectLastKilledPiece() noexcept {
 		--deadPiecesCounter;
+	}
+
+	int piecesAlive() const noexcept {
+		return pieces_.size() - deadPiecesCounter;
+	}
+
+	auto getPiecesCopy() noexcept {
+		std::vector<std::unique_ptr<Piece>> piecesCopy;
+		for (const auto& piece : *this)
+			piecesCopy.push_back(piece->clone());
+
+		return piecesCopy;
 	}
 };

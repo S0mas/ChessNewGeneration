@@ -35,14 +35,14 @@ public:
 	}
 
 	void doMove(const SimpleMove& move) {
-		auto pieceToKill = std::find_if(pieces_.begin(), pieces_.end(), [&move](const auto& piece) {
+		const auto& pieceToKill = std::find_if(pieces_.begin(), pieces_.end(), [&move](const auto& piece) {
 			return piece->getPosition() == move.destination_;
 		});
 
 		auto movedPiece = getPieceByPosition(move.origin_)->get();
 		movedPiece->setPosition(move.destination_);
-
-		pieces_.killPiece(pieceToKill);
+		const auto& pieceToKillPosition = std::distance(pieces_.begin(), pieceToKill);
+		pieces_.killPiece(pieceToKillPosition);
 		addMove(Move(move, movedPiece, pieceToKill != notFound()));
 	}
 

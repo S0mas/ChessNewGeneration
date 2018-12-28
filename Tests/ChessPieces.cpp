@@ -22,8 +22,7 @@ TEST_F(ChessPiecesTests, killPiece_invalidValueEnd) {
 	ChessPieces cp;
 	auto size = std::distance(cp.begin(), cp.end());
 	EXPECT_EQ(size, 32);
-	auto end = cp.end();
-	cp.killPiece(end);
+	cp.killPiece(32);
 	size = std::distance(cp.begin(), cp.end());
 	EXPECT_EQ(size, 32);
 }
@@ -32,16 +31,14 @@ TEST_F(ChessPiecesTests, killPiece_validValueBegin) {
 	ChessPieces cp;
 	auto size = std::distance(cp.begin(), cp.end());
 	EXPECT_EQ(size, 32);
-	auto begin = cp.begin();
-	cp.killPiece(begin);
+	cp.killPiece(31);
 	size = std::distance(cp.begin(), cp.end());
 	EXPECT_EQ(size, 31);
 }
 
 TEST_F(ChessPiecesTests, resurrectPiece) {
 	ChessPieces cp;
-	auto begin = cp.begin();
-	cp.killPiece(begin);
+	cp.killPiece(31);
 	cp.resurrectLastKilledPiece();
 	const auto size = std::distance(cp.begin(), cp.end());
 	EXPECT_EQ(size, 32);

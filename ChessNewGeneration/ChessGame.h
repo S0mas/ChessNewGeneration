@@ -8,6 +8,7 @@ protected:
 	Player winner_;
 	Player activePlayer_ = Player::White;
 	Player waitingPlayer_ = Player::Black;
+	std::vector<SimpleMove> legalMoves_;
 #ifdef Tests
 	FRIEND_TEST(ChessGameTests, checkmate);
 	FRIEND_TEST(ChessGameTests, noCheckmate_stalemate);
@@ -125,14 +126,14 @@ protected:
 	}
 
 	auto getAllLegalMoves(const Player& playerToMove) noexcept {
-		std::vector<SimpleMove> legalMoves;
+		legalMoves_.clear();
 		for (const auto& piece : chessboard_.getPieces()) {
 			if(piece->getOwner() == playerToMove)
 				for (const auto& legalMove : getAllLegalMovesForPiece(*piece))
-					legalMoves.push_back(legalMove);
+					legalMoves_.push_back(legalMove);
 		}
 
-		return legalMoves;
+		return legalMoves_;
 	}
 
 	bool isThereCheckmate() noexcept {
