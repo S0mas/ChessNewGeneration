@@ -104,7 +104,7 @@
   <ItemGroup>
     <ClInclude Include="Chessboard.h" />
     <ClInclude Include="ChessGame.h" />
-    <ClInclude Include="ChessboardPrinter.h" />
+    <ClInclude Include="ChessPieces.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Position.h" />

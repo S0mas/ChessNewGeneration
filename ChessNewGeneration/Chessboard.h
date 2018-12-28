@@ -4,65 +4,10 @@
 #include <algorithm>
 #include <stack>
 #include "Move.h"
-
-class Pieces {
-	std::array<std::unique_ptr<Piece>, 32> pieces_;
-	int deadPiecesCounter = 0;
-
-	void buildPieces(const Player& owner, int& posInArray) {
-		std::string rowNumber = (owner == Player::White) ? "1" : "8";
-		pieces_.at(posInArray++) = std::make_unique<King>(Position("E" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Queen>(Position("D" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("A" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Rook>(Position("H" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("B" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Knight>(Position("G" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("C" + rowNumber), owner);
-		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("F" + rowNumber), owner);
-
-		rowNumber = (owner == Player::White) ? "2" : "7";
-		for (const auto& column : Board::getAllColumns()) {
-			pieces_.at(posInArray++) = std::make_unique<Pawn>(Position(column + rowNumber), owner);
-		}
-	}
-public:
-	Pieces() {
-		auto posInArray = 0;
-		buildPieces(Player::White, posInArray);
-		buildPieces(Player::Black, posInArray);
-	};
-
-	auto cbegin() const noexcept {
-		return pieces_.cbegin();
-	}
-	auto cend() const noexcept {
-		return pieces_.cend() - deadPiecesCounter;
-	}
-
-	auto begin() noexcept {
-		return pieces_.begin();
-	}
-
-	auto end() noexcept {
-		return pieces_.end() - deadPiecesCounter;
-	}
-
-	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) noexcept {
-		if(pieceToKill != cend()) {
-			++deadPiecesCounter;
-			pieceToKill->swap(pieces_.at(pieces_.size() - deadPiecesCounter));
-		}
-	}
-
-	void resurectLastKilledPiece() noexcept {
-		--deadPiecesCounter;
-	}
-};
-
-
+#include "ChessPieces.h"
 
 class ChessBoard {	
-	Pieces pieces_;
+	ChessPieces pieces_;
 	std::stack<Move> moves_;
 public:
 	auto findKing(const Player& owner) const noexcept {
@@ -106,7 +51,7 @@ public:
 			const auto& moveToUndo = moves_.top();
 			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
 			if (moveToUndo.wasPiecekilled_)
-				pieces_.resurectLastKilledPiece();
+				pieces_.resurrectLastKilledPiece();
 			moves_.pop();
 		}
 	}

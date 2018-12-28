@@ -98,7 +98,7 @@ inline std::ostream& operator<<(std::ostream& out, const Position& position) noe
 	return out;
 }
 
-struct Board {
+class Board {
 	static constexpr std::array<const char, 8> allColumns = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 	static constexpr std::array<const char, 8> allRows = { '1', '2', '3', '4', '5', '6', '7', '8' };
 	static constexpr std::array<const Position, Position::columnsNo*Position::rowsNo> allPossiblePositions = {
@@ -110,16 +110,16 @@ struct Board {
 		Position(0,5), Position(1,5), Position(2,5), Position(3,5), Position(4,5), Position(5,5), Position(6,5), Position(7,5),
 		Position(0,6), Position(1,6), Position(2,6), Position(3,6), Position(4,6), Position(5,6), Position(6,6), Position(7,6),
 		Position(0,7), Position(1,7), Position(2,7), Position(3,7), Position(4,7), Position(5,7), Position(6,7), Position(7,7) };
-
-	static constexpr const std::array<const Position, Position::columnsNo*Position::rowsNo>& getAllPossiblePositions() noexcept {
+public:
+	static constexpr const std::array<const Position, Position::columnsNo*Position::rowsNo>& getAllPossiblePositions() noexcept  {
 		return allPossiblePositions;
 	}
 
-	static constexpr auto& getAllColumns() noexcept {
+	static constexpr const auto& getAllColumns() noexcept {
 		return allColumns;
 	}
 
-	static constexpr auto& getAllRows() noexcept {
+	static constexpr const auto& getAllRows() noexcept {
 		return allRows;
 	}
 };
