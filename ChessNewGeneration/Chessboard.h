@@ -1,35 +1,9 @@
 #pragma once
-#include "Pieces.h"
+#include "Piece.h"
 #include "Player.h"
 #include <algorithm>
 #include <stack>
-#include "ChessboardPrinter.h"
-#include <iostream>
-
-struct SimpleMove {
-	SimpleMove(const Position& origin, const Position& destination) : origin_(origin), destination_(destination) {
-		if (origin == destination) throw InvalidMoveSpecifiad();
-	}
-	Position origin_;
-	Position destination_;
-
-	class InvalidMoveSpecifiad final : public std::exception {
-		const char *what() const noexcept override {
-			return "Origin and destination can not be the same position";
-		}
-	};
-};
-
-struct Move {
-	Move(const SimpleMove& move, Piece* movedPiece, const bool wasPieceKilled = false) :
-		move_(move),
-		movedPiece_(movedPiece),
-		wasPiecekilled_(wasPieceKilled) {}
-
-	const SimpleMove move_;
-	Piece* const movedPiece_;// no ownership
-	bool wasPiecekilled_;
-};
+#include "Move.h"
 
 class Pieces {
 	std::array<std::unique_ptr<Piece>, 32> pieces_;
@@ -47,7 +21,7 @@ class Pieces {
 		pieces_.at(posInArray++) = std::make_unique<Bishop>(Position("F" + rowNumber), owner);
 
 		rowNumber = (owner == Player::White) ? "2" : "7";
-		for (const auto& column : Position::getAllColumns()) {
+		for (const auto& column : Board::getAllColumns()) {
 			pieces_.at(posInArray++) = std::make_unique<Pawn>(Position(column + rowNumber), owner);
 		}
 	}
@@ -84,6 +58,8 @@ public:
 		--deadPiecesCounter;
 	}
 };
+
+
 
 class ChessBoard {	
 	Pieces pieces_;
@@ -145,22 +121,5 @@ public:
 
 	const auto& getPieces() const noexcept {
 		return pieces_;
-	}
-
-	std::string toString() const noexcept {
-		std::string result;
-		for (auto i = 8; i > 0; --i) {
-			Row row(i);
-			for (auto j = 0; j < 8; ++j) {
-				const auto& piece = getPieceByPosition(Position(j, i - 1));
-				if (piece != notFound())
-					row.fields[j].piece_ = (*piece)->toString();
-				else
-					row.fields[j].piece_ = row.fields[j].spaceChar;
-			}
-			result += row.toString();			
-		}
-		result += "  A  B  C  D  E  F  G  H  \n";
-		return result;
 	}
 };

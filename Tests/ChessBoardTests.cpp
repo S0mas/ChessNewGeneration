@@ -86,9 +86,3 @@ TEST_F(ChessBoardTests, getPieces) {
 	const auto& end = cb.getPieces().cend();
 	EXPECT_EQ(std::distance(begin, end), 32);
 }
-
-TEST_F(ChessBoardTests, toString) {
-	ChessBoard cb;
-	std::cout << cb.toString() << std::endl;
-	getchar();
-}

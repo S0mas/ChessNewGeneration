@@ -146,22 +146,13 @@ class ChessGame {
 	int nextMove = 0;
 
 	SimpleMove requestMove() const noexcept {
-		/*std::string origin;
+		std::string origin;
 		std::string destination;
 		std::cin >> origin;
 		std::cin >> destination;
 
-		return { Position(origin), Position(destination) };*/
-		std::vector<SimpleMove> movs;
-		movs.push_back({ Position("E2"), Position("E4") });
-		movs.push_back({ Position("E7"), Position("E5") });
-		movs.push_back({ Position("D1"), Position("F3") });
-		movs.push_back({ Position("A7"), Position("A5") });
-		movs.push_back({ Position("F1"), Position("C4") });
-		movs.push_back({ Position("A5"), Position("A4") });
-		movs.push_back({ Position("F3"), Position("F7") });
+		return { Position(origin), Position(destination) };
 
-		return movs[nextMove];
 	}
 
 	SimpleMove requestValidMove() noexcept {
@@ -176,20 +167,11 @@ public:
 	Player waitingPlayer_ = Player::Black;
 	void startGame() {
 		while (!isGameEnded()) {
-			std::cout << chessboard_.toString();
-			if (activePlayer_ == Player::White)
-				std::cout << "-----> WHITE TO MOVE <-----\n";
-			else
-				std::cout << "-----> BLACK TO MOVE <-----\n";
-			
+
 			chessboard_.doMove(requestValidMove());
 			std::swap(activePlayer_, waitingPlayer_);
 		}
 
 		winner_ = waitingPlayer_;
-		if (waitingPlayer_ == Player::White)
-			std::cout << "-----> WHITE WON <-----\n";
-		else
-			std::cout << "-----> BLACK WON <-----\n";
 	}
 };

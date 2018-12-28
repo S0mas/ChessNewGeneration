@@ -8,36 +8,10 @@ class Position;
 constexpr bool operator==(const Position &lhs, const Position &rhs) noexcept;
 constexpr bool operator!=(const Position &lhs, const Position &rhs) noexcept;
 class Position {
-public:
-	static const auto& getAllPossiblePositions() {
-		static const std::array<const Position, 64> allPossiblePositions = {
-			Position("A1"), Position("A2"), Position("A3"), Position("A4"), Position("A5"), Position("A6"), Position("A7"), Position("A8"),
-			Position("B1"), Position("B2"), Position("B3"), Position("B4"), Position("B5"), Position("B6"), Position("B7"), Position("B8"),
-			Position("C1"), Position("C2"), Position("C3"), Position("C4"), Position("C5"), Position("C6"), Position("C7"), Position("C8"),
-			Position("D1"), Position("D2"), Position("D3"), Position("D4"), Position("D5"), Position("D6"), Position("D7"), Position("D8"),
-			Position("E1"), Position("E2"), Position("E3"), Position("E4"), Position("E5"), Position("E6"), Position("E7"), Position("E8"),
-			Position("F1"), Position("F2"), Position("F3"), Position("F4"), Position("F5"), Position("F6"), Position("F7"), Position("F8"),
-			Position("G1"), Position("G2"), Position("G3"), Position("G4"), Position("G5"), Position("G6"), Position("G7"), Position("G8"),
-			Position("H1"), Position("H2"), Position("H3"), Position("H4"), Position("H5"), Position("H6"), Position("H7"), Position("H8") };
-
-		return allPossiblePositions;
-	}
-
-	static const auto& getAllColumns() noexcept {
-		static const std::array<const std::string, 8> allColumn = { "A", "B", "C", "D", "E", "F", "G", "H" };
-		return allColumn;
-	}
-
-	static const auto& getAllRows() noexcept {
-		static const std::array<const std::string, 8> allRows = { "1", "2", "3", "4", "5", "6", "7", "8" };
-		return allRows;
-	}
-
-private:
 	constexpr bool isPositionValid() const noexcept {
-		if (row_ < 0 || row_ >= getAllRows().size())
+		if (row_ < 0 || row_ >= rowsNo)
 			return false;
-		if (column_ < 0 || column_ >= getAllColumns().size())
+		if (column_ < 0 || column_ >= columnsNo)
 			return false;
 		return true;
 	}
@@ -50,6 +24,8 @@ private:
 		return Position(columnLetter - 'A', rowNumber - '0' - 1);
 	}
 public:
+	static constexpr int columnsNo = 8;
+	static constexpr int rowsNo = 8;
 	int column_{};
 	int row_{};
 
@@ -121,3 +97,29 @@ inline std::ostream& operator<<(std::ostream& out, const Position& position) noe
 	out << position.toString() << std::endl;
 	return out;
 }
+
+struct Board {
+	static constexpr std::array<const char, 8> allColumns = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
+	static constexpr std::array<const char, 8> allRows = { '1', '2', '3', '4', '5', '6', '7', '8' };
+	static constexpr std::array<const Position, Position::columnsNo*Position::rowsNo> allPossiblePositions = {
+		Position(0,0), Position(1,0), Position(2,0), Position(3,0), Position(4,0), Position(5,0), Position(6,0), Position(7,0),
+		Position(0,1), Position(1,1), Position(2,1), Position(3,1), Position(4,1), Position(5,1), Position(6,1), Position(7,1),
+		Position(0,2), Position(1,2), Position(2,2), Position(3,2), Position(4,2), Position(5,2), Position(6,2), Position(7,2),
+		Position(0,3), Position(1,3), Position(2,3), Position(3,3), Position(4,3), Position(5,3), Position(6,3), Position(7,3),
+		Position(0,4), Position(1,4), Position(2,4), Position(3,4), Position(4,4), Position(5,4), Position(6,4), Position(7,4),
+		Position(0,5), Position(1,5), Position(2,5), Position(3,5), Position(4,5), Position(5,5), Position(6,5), Position(7,5),
+		Position(0,6), Position(1,6), Position(2,6), Position(3,6), Position(4,6), Position(5,6), Position(6,6), Position(7,6),
+		Position(0,7), Position(1,7), Position(2,7), Position(3,7), Position(4,7), Position(5,7), Position(6,7), Position(7,7) };
+
+	static constexpr const std::array<const Position, Position::columnsNo*Position::rowsNo>& getAllPossiblePositions() noexcept {
+		return allPossiblePositions;
+	}
+
+	static constexpr auto& getAllColumns() noexcept {
+		return allColumns;
+	}
+
+	static constexpr auto& getAllRows() noexcept {
+		return allRows;
+	}
+};

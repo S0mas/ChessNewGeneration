@@ -81,3 +81,27 @@ TEST_F(PieceTests, getRoute_InvalidMove_InvalidAttack) {
 
 	EXPECT_ANY_THROW(queen.getRoute(Position("F3")));
 }
+
+TEST_F(PieceTests, getAllPossibleMoves_ValidAttack_InvalidMove) {
+	Knight knight(Position("D5"));
+	WHEN_CALLED(knight.isConsistentWithMoveRules(ANY_REF(Position))).Return(true);
+	WHEN_CALLED(knight.isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
+
+	EXPECT_EQ(knight.getAllPossibleMoves().size(), 64);
+}
+
+TEST_F(PieceTests, getAllPossibleMoves_InvalidAttack_ValidMove) {
+	Knight knight(Position("D5"));
+	WHEN_CALLED(knight.isConsistentWithMoveRules(ANY_REF(Position))).Return(false);
+	WHEN_CALLED(knight.isConsistentWithAttackRules(ANY_REF(Position))).Return(true);
+
+	EXPECT_EQ(knight.getAllPossibleMoves().size(), 64);
+}
+
+TEST_F(PieceTests, getAllPossibleMoves_InvalidAttack_InvalidMove) {
+	Knight knight(Position("D5"));
+	WHEN_CALLED(knight.isConsistentWithMoveRules(ANY_REF(Position))).Return(false);
+	WHEN_CALLED(knight.isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
+
+	EXPECT_TRUE(knight.getAllPossibleMoves().empty());
+}

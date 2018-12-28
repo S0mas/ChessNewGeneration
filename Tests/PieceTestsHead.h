@@ -2,7 +2,7 @@
 #include "pch.h"
 #include <gtest/gtest.h>
 #include <isolator.h>
-#include "../ChessNewGeneration/Pieces.h"
+#include "../ChessNewGeneration/Piece.h"
 
 class PieceTests : public ::testing::Test {
 public:

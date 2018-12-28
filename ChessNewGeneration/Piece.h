@@ -33,7 +33,6 @@ public:
 		firstMove_ = false;
 	}
 
-	//TODO:Tests
 	virtual std::vector<Position> getRoute(const Position& destination) const {
 		if (!isConsistentWithMoveRules(destination) && !isConsistentWithAttackRules(destination))
 			throw InvalidDestination();
@@ -48,11 +47,11 @@ public:
 	virtual bool isConsistentWithAttackRules(const Position& destPosition) const noexcept {
 		return isConsistentWithMoveRules(destPosition);
 	}
-	//TODO:Tests
+
 	std::vector<Position> getAllPossibleMoves() const noexcept {
 		std::vector<Position> possibleMoves;
 		possibleMoves.reserve(20);
-		for (const auto& position : Position::getAllPossiblePositions())
+		for (const auto& position : Board::getAllPossiblePositions())
 			if (isConsistentWithAttackRules(position) || isConsistentWithMoveRules(position))
 				possibleMoves.push_back(position);
 		return possibleMoves;
