@@ -10,6 +10,8 @@ class ChessBoard {
 	ChessPieces pieces_;
 	std::stack<Move> moves_;
 public:
+	ChessBoard() = default;
+	ChessBoard(const ChessBoard& cp) = default;
 	auto findKing(const Player& owner) const noexcept {
 		return std::find_if(pieces_.begin(), pieces_.end(), [&owner](const auto& piece) {
 			return  piece->getOwner() == owner && piece->isKing();

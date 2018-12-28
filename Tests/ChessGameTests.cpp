@@ -38,7 +38,7 @@ TEST_F(ChessGameTests, noCheckmate_stalemate) {
 
 TEST_F(ChessGameTests, noCheckmate_haveLegalMovesNoCheck) {
 	ChessGame chess;
-	PRIVATE_WHEN_CALLED(&chess, checkIfMoveIsLegal, TYPEOF(const SimpleMove&)).Return(true);
+	chess.legalMoves_.emplace_back(SimpleMove(Position("A1"), Position("A2")));
 	PRIVATE_WHEN_CALLED(&chess, isThereCheck, TYPEOF(const Player&)).Return(false);
 	EXPECT_FALSE(chess.isThereCheckmate());
 	EXPECT_FALSE(chess.isThereStalemate());
@@ -46,7 +46,7 @@ TEST_F(ChessGameTests, noCheckmate_haveLegalMovesNoCheck) {
 
 TEST_F(ChessGameTests, noCheckmate_haveLegalMoves) {
 	ChessGame chess;
-	PRIVATE_WHEN_CALLED(&chess, checkIfMoveIsLegal, TYPEOF(const SimpleMove&)).Return(true);
+	chess.legalMoves_.emplace_back(SimpleMove(Position("A1"), Position("A2")));
 	PRIVATE_WHEN_CALLED(&chess, isThereCheck, TYPEOF(const Player&)).Return(true);
 	EXPECT_FALSE(chess.isThereCheckmate());
 	EXPECT_FALSE(chess.isThereStalemate());
@@ -161,8 +161,8 @@ TEST_F(ChessGameTests, attackIsLegal) {
 
 	WHEN_CALLED(target.isKing()).Return(false);
 	WHEN_CALLED(chess.isAttackPossible(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(true);
-	EXPECT_TRUE(chess.isAttackLegal(attacker, target));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_TRUE(chess.isAttackLegal(attacker, target, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, attackIsIllegal_kingIsTarget) {
@@ -172,8 +172,8 @@ TEST_F(ChessGameTests, attackIsIllegal_kingIsTarget) {
 
 	WHEN_CALLED(target.isKing()).Return(true);
 	WHEN_CALLED(chess.isAttackPossible(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(true);
-	EXPECT_FALSE(chess.isAttackLegal(attacker, target));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.isAttackLegal(attacker, target, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, attackIsIllegal_impossibleAttack) {
@@ -183,8 +183,8 @@ TEST_F(ChessGameTests, attackIsIllegal_impossibleAttack) {
 
 	WHEN_CALLED(target.isKing()).Return(false);
 	WHEN_CALLED(chess.isAttackPossible(ANY_REF(Piece), ANY_REF(Piece))).Return(false);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(true);
-	EXPECT_FALSE(chess.isAttackLegal(attacker, target));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.isAttackLegal(attacker, target, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, attackIsIllegal_isNotConsistentWithOtherRules) {
@@ -194,8 +194,8 @@ TEST_F(ChessGameTests, attackIsIllegal_isNotConsistentWithOtherRules) {
 
 	WHEN_CALLED(target.isKing()).Return(false);
 	WHEN_CALLED(chess.isAttackPossible(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(false);
-	EXPECT_FALSE(chess.isAttackLegal(attacker, target));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(false);
+	EXPECT_FALSE(chess.isAttackLegal(attacker, target, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsLegal) {
@@ -204,8 +204,8 @@ TEST_F(ChessGameTests, moveIsLegal) {
 	const Position destination("A6");
 
 	WHEN_CALLED(chess.isMovePossible(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(true);
-	EXPECT_TRUE(chess.isMoveLegal(mover, destination));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_TRUE(chess.isMoveLegal(mover, destination, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIllegal_impossibleMove) {
@@ -214,8 +214,8 @@ TEST_F(ChessGameTests, moveIsIllegal_impossibleMove) {
 	const Position destination("A6");
 
 	WHEN_CALLED(chess.isMovePossible(ANY_REF(Piece), ANY_REF(Position))).Return(false);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(true);
-	EXPECT_FALSE(chess.isMoveLegal(mover, destination));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.isMoveLegal(mover, destination, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIllegal_isNotConsistentWithOtherRules) {
@@ -224,72 +224,93 @@ TEST_F(ChessGameTests, moveIsIllegal_isNotConsistentWithOtherRules) {
 	const Position destination("A6");
 
 	WHEN_CALLED(chess.isMovePossible(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove))).Return(false);
-	EXPECT_FALSE(chess.isMoveLegal(mover, destination));
+	WHEN_CALLED(chess.isConsistentWithOtherRules(ANY_REF(SimpleMove), ANY_REF(ChessBoard))).Return(false);
+	EXPECT_FALSE(chess.isMoveLegal(mover, destination, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, consistentWithOtherRules) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player))).Return(false);
-	EXPECT_TRUE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }));
+	EXPECT_TRUE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, notConsistentWithOtherRules) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player))).Return(true);
-	EXPECT_FALSE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }));
+	EXPECT_FALSE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsLegal_move) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(false);
-	EXPECT_TRUE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(true);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(false);
+	EXPECT_TRUE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsLegal_attack) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(false);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	EXPECT_TRUE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A7") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(false);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_TRUE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A7") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIlegal_pieceNotFound) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A3"), Position("A5") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(true);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A3"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIlegal_ownerIsNotActivePlayer) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(false);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(true);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIlegal_breaksMoveRules) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(false);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(true);
-	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(false);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(true);
+	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, moveIsIlegal_breaksAttackRules) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isOwnerActivePlayer(ANY_REF(Piece))).Return(true);
-	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position))).Return(true);
-	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece))).Return(false);
-	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A7") }));
+	WHEN_CALLED(chess.isMoveLegal(ANY_REF(Piece), ANY_REF(Position), ANY_REF(ChessBoard))).Return(true);
+	WHEN_CALLED(chess.isAttackLegal(ANY_REF(Piece), ANY_REF(Piece), ANY_REF(ChessBoard))).Return(false);
+	EXPECT_FALSE(chess.checkIfMoveIsLegal({ Position("A1"), Position("A7") }, chess.chessboard_));
 }
 
-TEST_F(ChessGameTests, gameEnded) {
+TEST_F(ChessGameTests, gameEnded_Checkmate) {
 	ChessGame chess;
 	WHEN_CALLED(chess.isThereCheckmate()).Return(true);
+	WHEN_CALLED(chess.isThereStalemate()).Return(false);
+	std::vector<SimpleMove> dummy_moves;
+	WHEN_CALLED(chess.calculateAllLegalMoves(ANY_REF(Player))).Ignore();
 	EXPECT_TRUE(chess.isGameEnded());
+}
+
+TEST_F(ChessGameTests, gameEnded_Stalemate) {
+	ChessGame chess;
+	WHEN_CALLED(chess.isThereCheckmate()).Return(false);
+	WHEN_CALLED(chess.isThereStalemate()).Return(true);
+	std::vector<SimpleMove> dummy_moves;
+	WHEN_CALLED(chess.calculateAllLegalMoves(ANY_REF(Player))).Ignore();
+	EXPECT_TRUE(chess.isGameEnded());
+}
+
+TEST_F(ChessGameTests, gameNotEnded) {
+	ChessGame chess;
+	WHEN_CALLED(chess.isThereCheckmate()).Return(false);
+	WHEN_CALLED(chess.isThereStalemate()).Return(false);
+	std::vector<SimpleMove> dummy_moves;
+	WHEN_CALLED(chess.calculateAllLegalMoves(ANY_REF(Player))).Ignore();
+	EXPECT_FALSE(chess.isGameEnded());
 }

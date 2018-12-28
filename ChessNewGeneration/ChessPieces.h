@@ -41,6 +41,20 @@ class ChessPieces {
 	int deadPiecesCounter = 0;
 public:
 	ChessPieces() noexcept = default;
+	ChessPieces(const ChessPieces& cp) {
+		for (auto i = 0; i < pieces_.size(); ++i)
+			pieces_[i] = cp.pieces_[i]->clone();
+		deadPiecesCounter = cp.deadPiecesCounter;
+	}
+
+	ChessPieces(ChessPieces&& cp) noexcept {
+		std::swap(pieces_, cp.pieces_);
+		deadPiecesCounter = cp.deadPiecesCounter;
+	}
+
+	ChessPieces& operator=(const ChessPieces& cp) = delete;
+	ChessPieces& operator=(ChessPieces&& cp) = delete;
+
 	auto begin() const noexcept {
 		return pieces_.cbegin();
 	}
@@ -64,7 +78,7 @@ public:
 		return pieces_.size() - deadPiecesCounter;
 	}
 
-	auto getPiecesCopy() noexcept {
+	auto getPiecesCopy() const noexcept {
 		std::vector<std::unique_ptr<Piece>> piecesCopy;
 		for (const auto& piece : *this)
 			piecesCopy.push_back(piece->clone());

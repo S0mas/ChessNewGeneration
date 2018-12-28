@@ -8,7 +8,7 @@ protected:
 	Player winner_;
 	Player activePlayer_ = Player::White;
 	Player waitingPlayer_ = Player::Black;
-	std::vector<SimpleMove> legalMoves_;
+	mutable std::vector<SimpleMove> legalMoves_;
 #ifdef Tests
 	FRIEND_TEST(ChessGameTests, checkmate);
 	FRIEND_TEST(ChessGameTests, noCheckmate_stalemate);
@@ -41,7 +41,8 @@ protected:
 	FRIEND_TEST(ChessGameTests, moveIsIlegal_ownerIsNotActivePlayer);
 	FRIEND_TEST(ChessGameTests, moveIsIlegal_breaksMoveRules);
 	FRIEND_TEST(ChessGameTests, moveIsIlegal_breaksAttackRules);
-	FRIEND_TEST(ChessGameTests, gameEnded);
+	FRIEND_TEST(ChessGameTests, gameEnded_Checkmate);
+	FRIEND_TEST(ChessGameTests, gameEnded_Stalemate);
 	FRIEND_TEST(ChessGameTests, gameNotEnded);
 #endif	
 
@@ -69,88 +70,71 @@ protected:
 		return piece.getOwner() == activePlayer_;
 	}
 
-	bool isConsistentWithOtherRules(const SimpleMove& move) noexcept {
+	bool isConsistentWithOtherRules(const SimpleMove& move, ChessBoard& chessBoardCopy) const noexcept {
 		//is there check after move
-		chessboard_.doMove(move);
+		chessBoardCopy.doMove(move);
 		const auto& result = !isThereCheck(activePlayer_);
-		chessboard_.undoMove();
+		chessBoardCopy.undoMove();
 		return result;
 	}
 
-	bool isAttackLegal(const Piece& attacker, const Piece& target) noexcept {
+	bool isAttackLegal(const Piece& attacker, const Piece& target, ChessBoard& chessBoardCopy) const noexcept {
 		auto const& isLegal = !target.isKing() && isAttackPossible(attacker, target);
-		return isLegal && isConsistentWithOtherRules({ attacker.getPosition(), target.getPosition() });
+		return isLegal && isConsistentWithOtherRules({ attacker.getPosition(), target.getPosition() }, chessBoardCopy);
 	}
 
-	bool isMoveLegal(const Piece& pieceToMove, const Position& destination) noexcept {
+	bool isMoveLegal(const Piece& pieceToMove, const Position& destination, ChessBoard& chessBoardCopy) const noexcept {
 		auto const& isLegal = isMovePossible(pieceToMove, destination);
-		return isLegal && isConsistentWithOtherRules({ pieceToMove.getPosition(), destination });
+		return isLegal && isConsistentWithOtherRules({ pieceToMove.getPosition(), destination }, chessBoardCopy);
 	}
 
-	bool checkIfMoveIsLegal(const SimpleMove& simpleMove) noexcept {
+	bool checkIfMoveIsLegal(const SimpleMove& simpleMove, ChessBoard& chessBoardCopy) const noexcept {
 		const auto& pieceToMove = chessboard_.getPieceByPosition(simpleMove.origin_);
 		if (pieceToMove != chessboard_.notFound() && isOwnerActivePlayer(**pieceToMove)) {
 			const auto& pieceToAttack = chessboard_.getPieceByPosition(simpleMove.destination_);
-			return pieceToAttack == chessboard_.notFound() ? isMoveLegal(**pieceToMove, simpleMove.destination_) : isAttackLegal(**pieceToMove, **pieceToAttack);
+			return pieceToAttack == chessboard_.notFound() ? isMoveLegal(**pieceToMove, simpleMove.destination_, chessBoardCopy) : isAttackLegal(**pieceToMove, **pieceToAttack, chessBoardCopy);
 		}
 		return false;
 	}
 
-	//Todo: test
-	auto getAllValidMovesForPiece(const Piece& piece) const noexcept {
-		const auto& possibleMoves = piece.getAllPossibleMoves();
-		std::vector<Position> validMoves;
-		validMoves.reserve(100);
-		for (const auto& destination : possibleMoves) {
-			auto isValid = false;
-			const auto& target = chessboard_.getPieceByPosition(destination);
-			if (target == chessboard_.notFound()) 
-				isValid = isMovePossible(piece, destination);
-			else 
-				isValid = isAttackPossible(piece, **target);
-			if (isValid) 
-				validMoves.push_back(destination);		
-		}
-		return validMoves;
-	}
-
-	auto getAllLegalMovesForPiece(const Piece& piece) noexcept {
-		const auto& validMoves = getAllValidMovesForPiece(piece);
+	auto getAllLegalMovesForPiece(const Piece& piece, ChessBoard& chessBoardCopy) const noexcept {
+		const auto& possibleDestination = piece.getAllPossibleMoves();
 		const auto& origin = piece.getPosition();
 		std::vector<SimpleMove> legalMoves;
-		for (const auto& dest : validMoves) {
-			if (checkIfMoveIsLegal({ origin, dest }))
-				legalMoves.push_back({ origin, dest });
+		for (const auto& dest : possibleDestination) {
+			SimpleMove move = { origin, dest };
+			if (checkIfMoveIsLegal(move, chessBoardCopy))
+				legalMoves.push_back(std::move(move));
 		}
 		return legalMoves;
 	}
 
-	auto getAllLegalMoves(const Player& playerToMove) noexcept {
+	void calculateAllLegalMoves(const Player& playerToMove) const noexcept {
 		legalMoves_.clear();
-		for (const auto& piece : chessboard_.getPieces()) {
+		auto chessboardCopy(chessboard_);
+		for (const auto& piece : chessboardCopy.getPieces()) {
 			if(piece->getOwner() == playerToMove)
-				for (const auto& legalMove : getAllLegalMovesForPiece(*piece))
-					legalMoves_.push_back(legalMove);
+				for (auto&& legalMove : getAllLegalMovesForPiece(*piece, chessboardCopy))
+					legalMoves_.push_back(std::move(legalMove));
 		}
-
-		return legalMoves_;
 	}
 
-	bool isThereCheckmate() noexcept {
-		return isThereCheck(activePlayer_) && getAllLegalMoves(activePlayer_).empty();
+	bool isThereCheckmate() const noexcept {
+		return isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	bool isThereStalemate() noexcept {
-		return !isThereCheck(activePlayer_) && getAllLegalMoves(activePlayer_).empty();
+	bool isThereStalemate() const noexcept {
+		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	bool isGameEnded() noexcept {
+	bool isGameEnded() const noexcept {
+		calculateAllLegalMoves(activePlayer_);
 		return isThereCheckmate() || isThereStalemate();// && other stuff...;
 	}
 
-	SimpleMove requestValidMove() noexcept {
+	SimpleMove requestValidMove() const noexcept {
 		const auto& move = requestMove();
-		return checkIfMoveIsLegal(move) ? move : requestValidMove();
+		return std::find(legalMoves_.begin(), legalMoves_.end(), move) == legalMoves_.end() ? move : requestValidMove();
 	}
 
 	virtual SimpleMove requestMove() const noexcept { throw std::exception(); };
