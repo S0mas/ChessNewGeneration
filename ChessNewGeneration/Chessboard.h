@@ -7,8 +7,17 @@
 #include <iostream>
 
 struct SimpleMove {
+	SimpleMove(const Position& origin, const Position& destination) : origin_(origin), destination_(destination) {
+		if (origin == destination) throw InvalidMoveSpecifiad();
+	}
 	Position origin_;
 	Position destination_;
+
+	class InvalidMoveSpecifiad final : public std::exception {
+		const char *what() const noexcept override {
+			return "Origin and destination can not be the same position";
+		}
+	};
 };
 
 struct Move {
@@ -64,14 +73,14 @@ public:
 		return pieces_.end() - deadPiecesCounter;
 	}
 
-	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) {
+	void killPiece(std::array<std::unique_ptr<Piece>, 32>::iterator& pieceToKill) noexcept {
 		if(pieceToKill != cend()) {
 			++deadPiecesCounter;
 			pieceToKill->swap(pieces_.at(pieces_.size() - deadPiecesCounter));
 		}
 	}
 
-	void resurectLastKilledPiece() {
+	void resurectLastKilledPiece() noexcept {
 		--deadPiecesCounter;
 	}
 };

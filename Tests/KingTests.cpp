@@ -29,24 +29,6 @@ TEST_F(KingTests, invalidMoves) {
 	EXPECT_FALSE(king.isConsistentWithMoveRules(Position("D6")));
 }
 
-TEST_F(KingTests, moveUsesMoveRules) {
-	King king(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(king.isConsistentWithMoveRules(newPosition)).Return(true);
-	king.move(newPosition);
-	ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
-}
-
-TEST_F(KingTests, attackUsesAttackRules) {
-	King king(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(king.isConsistentWithAttackRules(newPosition)).Return(true);
-	king.attack(newPosition);
-	ASSERT_WAS_CALLED(king.isConsistentWithAttackRules(newPosition));
-}
-
 TEST_F(KingTests, attackRulesUsesMoveRules) {
 	King king(Position("C4"));
 	const Position newPosition("B3");

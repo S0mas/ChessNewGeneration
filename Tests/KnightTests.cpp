@@ -26,22 +26,7 @@ TEST_F(KnightTests, invalidMoves) {
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("G4")));
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("H8")));
 }
-TEST_F(KnightTests, moveUsesMoveRules) {
-	Knight knight(Position("C4"));
-	const Position newPosition("B3");
 
-	WHEN_CALLED(knight.isConsistentWithMoveRules(newPosition)).Return(true);
-	knight.move(newPosition);
-	ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
-}
-TEST_F(KnightTests, attackUsesMoveRules) {
-	Knight knight(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(knight.isConsistentWithAttackRules(newPosition)).Return(true);
-	knight.attack(newPosition);
-	ASSERT_WAS_CALLED(knight.isConsistentWithAttackRules(newPosition));
-}
 TEST_F(KnightTests, attackRulesUsesMoveRules) {
 	Knight knight(Position("C4"));
 	const Position newPosition("B3");

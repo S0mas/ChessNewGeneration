@@ -42,22 +42,6 @@ TEST_F(QueenTests, invalidMoves) {
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("F2")));
 	EXPECT_FALSE(queen.isConsistentWithMoveRules(Position("D6")));
 }
-TEST_F(QueenTests, moveUsesMoveRules) {
-	Queen queen(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(queen.isConsistentWithMoveRules(newPosition)).Return(true);
-	queen.move(newPosition);
-	ASSERT_WAS_CALLED(queen.isConsistentWithMoveRules(newPosition));
-}
-TEST_F(QueenTests, attackUsesMoveRules) {
-	Queen queen(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(queen.isConsistentWithAttackRules(newPosition)).Return(true);
-	queen.attack(newPosition);
-	ASSERT_WAS_CALLED(queen.isConsistentWithAttackRules(newPosition));
-}
 TEST_F(QueenTests, attackRulesUsesMoveRules) {
 	const Queen queen(Position("C4"));
 	const Position newPosition("B3");

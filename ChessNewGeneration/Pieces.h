@@ -2,11 +2,12 @@
 #include "Position.h"
 #include "Player.h"
 #include <vector>
-class King;
+
 class Piece {
 protected:
 	Position position_;
 	const Player owner_;
+	bool firstMove_ = true;
 public:
 	constexpr explicit Piece(const Position& pos, const Player owner = Player::White) noexcept : position_(pos), owner_(owner) {}
 	Piece(const Piece& original) noexcept = default;
@@ -23,8 +24,13 @@ public:
 		return owner_;
 	}
 
-	void setPosition(const Position& destination) {
+	auto hasNotMoved() const noexcept {
+		return firstMove_;
+	}
+
+	virtual void setPosition(const Position& destination) noexcept {
 		position_ = destination;
+		firstMove_ = false;
 	}
 
 	//TODO:Tests
@@ -52,16 +58,6 @@ public:
 		return possibleMoves;
 	}
 
-	virtual void attack(const Position& destPosition) noexcept {
-		if (position_ != destPosition && isConsistentWithAttackRules(destPosition))
-			position_ = destPosition;
-	}
-
-	virtual void move(const Position& destPosition) noexcept {
-		if (position_ != destPosition && isConsistentWithMoveRules(destPosition))
-			position_ = destPosition;
-	}
-	//TODO:Tests
 	virtual std::string toString() const noexcept { return "ABSTRACT_PIECE"; };
 
 	class InvalidDestination final : public std::exception {
@@ -142,7 +138,6 @@ public:
 };
 
 class Pawn final : public Piece {
-	bool firstMove_ = true;
 public:
 	constexpr explicit Pawn(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner){}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
@@ -151,20 +146,6 @@ public:
 
 	bool isConsistentWithAttackRules(const Position& destPosition) const noexcept final {
 		return position_.row_ + static_cast<int>(owner_) == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
-	}
-
-	void attack(const Position& destPosition) noexcept final {
-		if (position_ != destPosition && isConsistentWithAttackRules(destPosition)) {
-			position_ = destPosition;
-			firstMove_ = false;
-		}
-	}
-
-	void move(const Position& destPosition) noexcept final {
-		if (position_ != destPosition && isConsistentWithMoveRules(destPosition)) {
-			position_ = destPosition;
-			firstMove_ = false;
-		}
 	}
 
 	std::string toString() const noexcept final {

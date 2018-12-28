@@ -17,22 +17,6 @@ TEST_F(RookTests, invalidMoves) {
 			if(column != "C" && row != "4")
 				EXPECT_FALSE(rook.isConsistentWithMoveRules(Position(column + row)));
 }
-TEST_F(RookTests, moveUsesMoveRules) {
-	Rook rook(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(rook.isConsistentWithMoveRules(newPosition)).Return(true);
-	rook.move(newPosition);
-	ASSERT_WAS_CALLED(rook.isConsistentWithMoveRules(newPosition));
-}
-TEST_F(RookTests, attackUsesMoveRules) {
-	Rook rook(Position("C4"));
-	const Position newPosition("B3");
-
-	WHEN_CALLED(rook.isConsistentWithAttackRules(newPosition)).Return(true);
-	rook.attack(newPosition);
-	ASSERT_WAS_CALLED(rook.isConsistentWithAttackRules(newPosition));
-}
 TEST_F(RookTests, attackRulesUsesMoveRules) {
 	const Rook rook(Position("C4"));
 	const Position newPosition("B3");
