@@ -5,9 +5,9 @@
 class ChessGame {
 protected:
 	ChessBoard chessboard_;
-	Player winner_ = Player::White;
-	Player activePlayer_ = Player::White;
-	Player waitingPlayer_ = Player::Black;
+	Player winner_;
+	Player activePlayer_;
+	Player waitingPlayer_;
 	mutable std::vector<SimpleMove> legalMoves_;
 #ifdef Tests
 	FRIEND_TEST(ChessGameTests, checkmate);
@@ -128,26 +128,29 @@ protected:
 		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	bool isGameEnded() const noexcept {
-		calculateAllLegalMoves(activePlayer_);
-		return isThereCheckmate() || isThereStalemate();// && other stuff...;
+	bool isThereDraw() const noexcept {
+		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	SimpleMove requestValidMove() const noexcept {
-		const auto& move = requestMove();
-		return std::find(legalMoves_.begin(), legalMoves_.end(), move) == legalMoves_.end() ? move : requestValidMove();
+	bool isValidMove(const SimpleMove& nextMove) const noexcept {
+		return std::find(legalMoves_.begin(), legalMoves_.end(), nextMove) != legalMoves_.end();
 	}
-
-	virtual SimpleMove requestMove() const noexcept { throw std::exception(); };
 public:
+	ChessGame() noexcept {
+		winner_ = Player::White;
+		activePlayer_ = Player::White;
+		waitingPlayer_ = Player::Black;
+	}
 	virtual ~ChessGame() = default;
 	void startGame() {
-		while (!isGameEnded()) {
-			chessboard_.doMove(requestValidMove());
+		//reset all
+	}
+
+	void nextMove(const SimpleMove& nextMove) noexcept {
+		if(!isGameEnded() && isValidMove(nextMove)) {
+			chessboard_.doMove(nextMove);
 			std::swap(activePlayer_, waitingPlayer_);
 		}
-
-		winner_ = waitingPlayer_;
 	}
 
 	auto getPiecesState() const noexcept  {
@@ -157,16 +160,10 @@ public:
 		
 		return piecesCopy;
 	}
-};
 
-//example use
-class ChessGameConsole final : public  ChessGame {
-	SimpleMove requestMove() const noexcept final {
-		std::string origin;
-		std::string destination;
-		std::cin >> origin;
-		std::cin >> destination;
-		return { Position(origin),  Position(destination) };
+	bool isGameEnded() const noexcept {
+		calculateAllLegalMoves(activePlayer_);
+		return isThereCheckmate() || isThereStalemate();// && other stuff...;
 	}
 };
 
