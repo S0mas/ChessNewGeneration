@@ -5,7 +5,7 @@
 class ChessGame {
 protected:
 	ChessBoard chessboard_;
-	Player winner_;
+	Player winner_ = Player::White;
 	Player activePlayer_ = Player::White;
 	Player waitingPlayer_ = Player::Black;
 	mutable std::vector<SimpleMove> legalMoves_;
@@ -102,6 +102,7 @@ protected:
 		const auto& origin = piece.getPosition();
 		std::vector<SimpleMove> legalMoves;
 		for (const auto& dest : possibleDestination) {
+			if (origin == dest) continue;
 			SimpleMove move = { origin, dest };
 			if (checkIfMoveIsLegal(move, chessBoardCopy))
 				legalMoves.push_back(std::move(move));

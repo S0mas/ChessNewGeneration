@@ -28,6 +28,10 @@ public:
 		return firstMove_;
 	}
 
+	void setFirstMove(const bool newValue) noexcept {
+		firstMove_ = newValue;
+	}
+
 	virtual void setPosition(const Position& destination) noexcept {
 		position_ = destination;
 		firstMove_ = false;

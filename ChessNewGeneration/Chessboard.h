@@ -42,16 +42,18 @@ public:
 		});
 
 		auto movedPiece = getPieceByPosition(move.origin_)->get();
+		const auto wasFirstMove = movedPiece->hasNotMoved();
 		movedPiece->setPosition(move.destination_);
 		const auto& pieceToKillPosition = std::distance(pieces_.begin(), pieceToKill);
 		pieces_.killPiece(pieceToKillPosition);
-		addMove(Move(move, movedPiece, pieceToKill != notFound()));
+		addMove(Move(move, movedPiece, wasFirstMove, pieceToKill != notFound()));
 	}
 
 	void undoMove() {
 		if(!moves_.empty()) {
 			const auto& moveToUndo = moves_.top();
 			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
+			moveToUndo.movedPiece_->setFirstMove(moveToUndo.wasFirstMove_);
 			if (moveToUndo.wasPiecekilled_)
 				pieces_.resurrectLastKilledPiece();
 			moves_.pop();

@@ -14,8 +14,6 @@ struct SimpleMove {
 			return "Origin and destination can not be the same position";
 		}
 	};
-
-
 };
 
 inline bool operator==(const SimpleMove& lhs, const SimpleMove& rhs) noexcept {
@@ -23,12 +21,14 @@ inline bool operator==(const SimpleMove& lhs, const SimpleMove& rhs) noexcept {
 }
 
 struct Move {
-	Move(const SimpleMove& move, Piece* const movedPiece, const bool wasPieceKilled = false) :
+	Move(const SimpleMove& move, Piece* const movedPiece, const bool wasFirstMove, const bool wasPieceKilled = false) :
 		move_(move),
 		movedPiece_(movedPiece),
-		wasPiecekilled_(wasPieceKilled) {}
+		wasPiecekilled_(wasPieceKilled),
+		wasFirstMove_(wasFirstMove){}
 
 	const SimpleMove move_;
 	Piece* const movedPiece_;// no ownership
+	const bool wasFirstMove_;
 	const bool wasPiecekilled_;
 };
