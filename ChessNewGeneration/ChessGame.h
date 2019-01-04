@@ -1,10 +1,10 @@
 #pragma once
 #include "Chessboard.h"
+#include <QString>
 
 class ChessGame {
 protected:
 	ChessBoard chessboard_;
-	Player winner_;
 	Player activePlayer_;
 	Player waitingPlayer_;
 	mutable std::vector<SimpleMove> legalMoves_;
@@ -136,7 +136,6 @@ protected:
 	}
 public:
 	ChessGame() noexcept {
-		winner_ = Player::White;
 		activePlayer_ = Player::White;
 		waitingPlayer_ = Player::Black;
 	}
@@ -144,6 +143,16 @@ public:
 
 	void resetGame() {
 		chessboard_.reset();
+	}
+
+	QString getWinner() const noexcept {
+		QString result = "game in progress";
+		
+		if (isThereCheckmate())
+			result = waitingPlayer_ == Player::White ? "white" : "black";
+		else if (isThereStalemate())
+			result = "draw";
+		return result;
 	}
 
 	void nextMove(const SimpleMove& nextMove) noexcept {

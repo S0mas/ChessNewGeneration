@@ -9,6 +9,15 @@ class ChessGameGUI final : public QWidget {
 	Q_OBJECT
 	ChessGame chess_;
 	std::vector<Square*> board_;
+	QLabel* winnerLabel;
+
+	void updateWinnerLabel() const noexcept {
+		if(chess_.isGameEnded())
+			winnerLabel->setText("The winner is: " + chess_.getWinner());
+		else
+			winnerLabel->setText("Game in progress..");
+	}
+
 	void updateDisplay() noexcept {
 		const auto pieces = chess_.getPiecesState();
 		for (const auto& square : board_) {
@@ -20,6 +29,7 @@ class ChessGameGUI final : public QWidget {
 				if (square->getPosition() == piece->getPosition())
 					square->setPieceImage(getImage(piece));
 		}
+		updateWinnerLabel();
 	}
 public:
 	std::vector<Position> move_;
@@ -42,10 +52,13 @@ public:
 		undoMoveButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		const auto resetButton = new QPushButton("Reset");
 		resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+		winnerLabel = new QLabel("Game in progress..");
+		winnerLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		connect(undoMoveButton, SIGNAL(clicked()), this, SLOT(undoMove()));
 		connect(resetButton, SIGNAL(clicked()), this, SLOT(resetGame()));
 
 		auto optionsButtonsLayout = new QVBoxLayout;
+		optionsButtonsLayout->addWidget(winnerLabel);
 		optionsButtonsLayout->addWidget(undoMoveButton);
 		optionsButtonsLayout->addWidget(resetButton);
 
