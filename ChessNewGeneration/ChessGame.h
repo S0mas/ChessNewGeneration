@@ -141,8 +141,9 @@ public:
 		waitingPlayer_ = Player::Black;
 	}
 	virtual ~ChessGame() = default;
-	void startGame() {
-		//reset all
+
+	void resetGame() {
+		chessboard_.reset();
 	}
 
 	void nextMove(const SimpleMove& nextMove) noexcept {
@@ -150,6 +151,11 @@ public:
 			chessboard_.doMove(nextMove);
 			std::swap(activePlayer_, waitingPlayer_);
 		}
+	}
+
+	void undoMove() noexcept {
+		if(chessboard_.undoMove())
+			std::swap(activePlayer_, waitingPlayer_);
 	}
 
 	auto getPiecesState() const noexcept  {

@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include "Square.h"
 #include <QPixmap>
+#include <QPushButton>
 
 class ChessGameGUI final : public QWidget {
 	Q_OBJECT
@@ -33,7 +34,17 @@ public:
 				board_.push_back(square);
 			}
 		}
-		setLayout(layout);
+		const auto undoMoveButton = new QPushButton("Backward");
+		const auto resetButton = new QPushButton("Reset");
+		connect(undoMoveButton, SIGNAL(clicked()), this, SLOT(undoMove()));
+		connect(resetButton, SIGNAL(clicked()), this, SLOT(resetGame()));
+		auto vlayout = new QVBoxLayout;
+		vlayout->addWidget(undoMoveButton);
+		vlayout->addWidget(resetButton);
+		auto hLayout = new QHBoxLayout;
+		hLayout->addLayout(layout);
+		hLayout->addLayout(vlayout);
+		setLayout(hLayout);
 		updateDisplay();
 	}
 
@@ -49,6 +60,16 @@ public slots:
 			move_.clear();
 			updateDisplay();
 		}
+	}
+
+	void undoMove() {
+		chess_.undoMove();
+		updateDisplay();
+	}
+
+	void resetGame() {
+		chess_.resetGame();
+		updateDisplay();
 	}
 
 	QPixmap getImage(const std::unique_ptr<Piece>& ptr) const noexcept {

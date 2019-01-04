@@ -49,7 +49,7 @@ public:
 		addMove(Move(move, movedPiece, wasFirstMove, pieceToKill != notFound()));
 	}
 
-	void undoMove() {
+	bool undoMove() {
 		if(!moves_.empty()) {
 			const auto& moveToUndo = moves_.top();
 			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
@@ -57,7 +57,9 @@ public:
 			if (moveToUndo.wasPieceKilled_)
 				pieces_.resurrectLastKilledPiece();
 			moves_.pop();
+			return true;
 		}
+		return false;
 	}
 
 	void addMove(const Move& move) noexcept {
@@ -70,5 +72,9 @@ public:
 
 	const auto& getPieces() const noexcept {
 		return pieces_;
+	}
+
+	void reset() noexcept {
+		while (undoMove()) {};
 	}
 };
