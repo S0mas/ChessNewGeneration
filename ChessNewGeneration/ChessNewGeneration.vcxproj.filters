@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-tidy" />
+    <None Include="QtProjectFile.pro" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Position.h">

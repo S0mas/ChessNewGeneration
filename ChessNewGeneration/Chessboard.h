@@ -54,7 +54,7 @@ public:
 			const auto& moveToUndo = moves_.top();
 			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
 			moveToUndo.movedPiece_->setFirstMove(moveToUndo.wasFirstMove_);
-			if (moveToUndo.wasPiecekilled_)
+			if (moveToUndo.wasPieceKilled_)
 				pieces_.resurrectLastKilledPiece();
 			moves_.pop();
 		}

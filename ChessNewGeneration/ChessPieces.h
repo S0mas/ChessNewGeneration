@@ -33,7 +33,7 @@ public:
 		pieces_[i++] = std::make_unique<King>(Position("E8"), Player::Black);
 		pieces_[i++] = std::make_unique<Bishop>(Position("F8"), Player::Black);
 		pieces_[i++] = std::make_unique<Knight>(Position("G8"), Player::Black);
-		pieces_[i++] = std::make_unique<Rook>(Position("H7"), Player::Black);
+		pieces_[i++] = std::make_unique<Rook>(Position("H8"), Player::Black);
 		pieces_[i++] = std::make_unique<Pawn>(Position("A7"), Player::Black);
 		pieces_[i++] = std::make_unique<Pawn>(Position("B7"), Player::Black);
 		pieces_[i++] = std::make_unique<Pawn>(Position("C7"), Player::Black);

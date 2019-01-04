@@ -1,6 +1,5 @@
 #pragma once
 #include "Chessboard.h"
-#include <iostream>
 
 class ChessGame {
 protected:
@@ -58,9 +57,9 @@ protected:
 			!chessboard_.isThereCollision(mover.getRoute(destination));
 	}
 
-	bool isThereCheck(const Player& playerToVerify) const noexcept {
-		const auto& king = chessboard_.findKing(playerToVerify);
-		const auto& pieces = chessboard_.getPieces();
+	bool isThereCheck(const Player& playerToVerify, const ChessBoard& chessboard) const noexcept {
+		const auto& king = chessboard.findKing(playerToVerify);
+		const auto& pieces = chessboard.getPieces();
 		return pieces.end() != std::find_if(pieces.begin(), pieces.end(), [&king, this](const auto& piece) {
 			return isAttackPossible(*piece, **king);
 		});
@@ -73,7 +72,7 @@ protected:
 	bool isConsistentWithOtherRules(const SimpleMove& move, ChessBoard& chessBoardCopy) const noexcept {
 		//is there check after move
 		chessBoardCopy.doMove(move);
-		const auto& result = !isThereCheck(activePlayer_);
+		const auto& result = !isThereCheck(activePlayer_, chessBoardCopy);
 		chessBoardCopy.undoMove();
 		return result;
 	}
@@ -121,15 +120,15 @@ protected:
 	}
 
 	bool isThereCheckmate() const noexcept {
-		return isThereCheck(activePlayer_) && legalMoves_.empty();
+		return isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
 	}
 
 	bool isThereStalemate() const noexcept {
-		return !isThereCheck(activePlayer_) && legalMoves_.empty();
+		return !isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
 	}
 
 	bool isThereDraw() const noexcept {
-		return !isThereCheck(activePlayer_) && legalMoves_.empty();
+		return !isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
 	}
 
 	bool isValidMove(const SimpleMove& nextMove) const noexcept {

@@ -339,3 +339,8 @@ ASALocalRun/
 /ChessNewGeneration/isolator/x32
 /ChessNewGeneration/moc_GUI.cpp
 /ChessNewGeneration/moc_Square.cpp
+/ChessNewGeneration/.qmake.stash
+/ChessNewGeneration/.qmake.winrt_uuid_ChessNewGeneration
+/ChessNewGeneration/Makefile
+/ChessNewGeneration/Makefile.Debug
+/ChessNewGeneration/Makefile.Release
