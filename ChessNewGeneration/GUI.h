@@ -25,39 +25,51 @@ public:
 	std::vector<Position> move_;
 
 	ChessGameGUI(QWidget* parent = 0) : QWidget(parent) {
-		auto chessBoard_layout = new QGridLayout;
+		auto chessBoardLayout = new QGridLayout;
 		for (auto column = 0; column < 8; ++column) {
 			for (auto row = 0; row < 8; ++row) {
 				auto square = new Square(column, row, this);
-				chessBoard_layout->addWidget(square, row, 7 - column);
+				chessBoardLayout->addWidget(square, row, 7 - column);
 				connect(square, SIGNAL(clicked()), this, SLOT(selectMove()));
 				board_.push_back(square);
 			}
 		}
-		chessBoard_layout->setHorizontalSpacing(0);
-		chessBoard_layout->setVerticalSpacing(0);
-		chessBoard_layout->setContentsMargins(0, 0, 0, 0);
-
-		auto space_layout = new QVBoxLayout;
-		space_layout->addItem(new QSpacerItem(10, 10));
-
-		auto chessBoardAndSpace_layout = new QVBoxLayout;
-		chessBoardAndSpace_layout->addLayout(space_layout);
-		chessBoardAndSpace_layout->addLayout(chessBoard_layout);
+		chessBoardLayout->setHorizontalSpacing(0);
+		chessBoardLayout->setVerticalSpacing(0);
+		chessBoardLayout->setContentsMargins(0, 0, 0, 0);
 
 		const auto undoMoveButton = new QPushButton("Backward");
+		undoMoveButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		const auto resetButton = new QPushButton("Reset");
+		resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 		connect(undoMoveButton, SIGNAL(clicked()), this, SLOT(undoMove()));
 		connect(resetButton, SIGNAL(clicked()), this, SLOT(resetGame()));
 
-		auto optionsButtons_layout = new QVBoxLayout;
-		optionsButtons_layout->addWidget(undoMoveButton);
-		optionsButtons_layout->addWidget(resetButton);
+		auto optionsButtonsLayout = new QVBoxLayout;
+		optionsButtonsLayout->addWidget(undoMoveButton);
+		optionsButtonsLayout->addWidget(resetButton);
 
-		auto all_layout = new QHBoxLayout;
-		all_layout->addLayout(chessBoardAndSpace_layout);
-		all_layout->addLayout(optionsButtons_layout);
-		setLayout(all_layout);
+		auto spaceLayoutLeft = new QVBoxLayout;
+		spaceLayoutLeft->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+		auto spaceLayoutRight = new QVBoxLayout;
+		spaceLayoutRight->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+		auto chessboardAndSpaceAndOptionsLayout = new QHBoxLayout;
+		chessboardAndSpaceAndOptionsLayout->addLayout(spaceLayoutLeft);
+		chessboardAndSpaceAndOptionsLayout->addLayout(chessBoardLayout);
+		chessboardAndSpaceAndOptionsLayout->addLayout(optionsButtonsLayout);
+		chessboardAndSpaceAndOptionsLayout->addLayout(spaceLayoutRight);
+
+		auto spaceLayoutTop = new QVBoxLayout;
+		spaceLayoutTop->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+		auto spaceLayoutBottom = new QVBoxLayout;
+		spaceLayoutBottom->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+		auto allLayouts = new QVBoxLayout;
+		allLayouts->addLayout(spaceLayoutTop);
+		allLayouts->addLayout(chessboardAndSpaceAndOptionsLayout);
+		allLayouts->addLayout(spaceLayoutBottom);
+		setLayout(allLayouts);
 
 		updateDisplay();
 	}

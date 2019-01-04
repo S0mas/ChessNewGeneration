@@ -20,8 +20,7 @@ public:
 			background = "QLabel {background-color: rgb(47,79,79);}:hover{background-color: rgb(170,85,127);}";
 		else 
 			background = "QLabel {background-color: rgb(211,211,200);}:hover{background-color: rgb(170,95,127);}";
-		this->setMinimumSize(QSize(16, 16));
-		this->setMaximumSize(QSize(64, 64));
+		this->setMinimumSize(QSize(64, 64));
 		this->setStyleSheet(background);
 		QSizePolicy p = this->sizePolicy();
 		p.setHeightForWidth(true);
@@ -29,8 +28,7 @@ public:
 		this->setSizePolicy(p);
 	}
 
-	void resizeEvent(QResizeEvent* event) override
-	{
+	void resizeEvent(QResizeEvent* event) final {
 		if(!image.isNull())
 			this->setPixmap(image.scaled(this->width(), this->height(), Qt::KeepAspectRatio));
 	}
@@ -61,7 +59,7 @@ signals:
 	void clicked();
 
 protected:
-	void mousePressEvent(QMouseEvent* event) {
+	void mousePressEvent(QMouseEvent* event) final {
 		emit clicked();
 	}
 };
