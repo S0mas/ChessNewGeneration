@@ -13,7 +13,7 @@ class ChessGameGUI final : public QWidget {
 		const auto pieces = chess_.getPiecesState();
 		for (const auto& square : board_) {
 			square->deactivate();
-			square->clear();
+			square->removeImage();
 		}	
 		for (const auto& piece : pieces) {
 			for (const auto& square : board_)
@@ -25,26 +25,40 @@ public:
 	std::vector<Position> move_;
 
 	ChessGameGUI(QWidget* parent = 0) : QWidget(parent) {
-		auto layout = new QGridLayout;
+		auto chessBoard_layout = new QGridLayout;
 		for (auto column = 0; column < 8; ++column) {
 			for (auto row = 0; row < 8; ++row) {
 				auto square = new Square(column, row, this);
-				layout->addWidget(square, row, 7 - column);
+				chessBoard_layout->addWidget(square, row, 7 - column);
 				connect(square, SIGNAL(clicked()), this, SLOT(selectMove()));
 				board_.push_back(square);
 			}
 		}
+		chessBoard_layout->setHorizontalSpacing(0);
+		chessBoard_layout->setVerticalSpacing(0);
+		chessBoard_layout->setContentsMargins(0, 0, 0, 0);
+
+		auto space_layout = new QVBoxLayout;
+		space_layout->addItem(new QSpacerItem(10, 10));
+
+		auto chessBoardAndSpace_layout = new QVBoxLayout;
+		chessBoardAndSpace_layout->addLayout(space_layout);
+		chessBoardAndSpace_layout->addLayout(chessBoard_layout);
+
 		const auto undoMoveButton = new QPushButton("Backward");
 		const auto resetButton = new QPushButton("Reset");
 		connect(undoMoveButton, SIGNAL(clicked()), this, SLOT(undoMove()));
 		connect(resetButton, SIGNAL(clicked()), this, SLOT(resetGame()));
-		auto vlayout = new QVBoxLayout;
-		vlayout->addWidget(undoMoveButton);
-		vlayout->addWidget(resetButton);
-		auto hLayout = new QHBoxLayout;
-		hLayout->addLayout(layout);
-		hLayout->addLayout(vlayout);
-		setLayout(hLayout);
+
+		auto optionsButtons_layout = new QVBoxLayout;
+		optionsButtons_layout->addWidget(undoMoveButton);
+		optionsButtons_layout->addWidget(resetButton);
+
+		auto all_layout = new QHBoxLayout;
+		all_layout->addLayout(chessBoardAndSpace_layout);
+		all_layout->addLayout(optionsButtons_layout);
+		setLayout(all_layout);
+
 		updateDisplay();
 	}
 
