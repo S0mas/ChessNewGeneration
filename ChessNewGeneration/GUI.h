@@ -27,7 +27,7 @@ class ChessGameGUI final : public QWidget {
 		for (const auto& piece : pieces) {
 			for (const auto& square : board_)
 				if (square->getPosition() == piece->getPosition())
-					square->setPieceImage(getImage(piece))
+					square->setPieceImage(getImage(piece));
 		}
 		updateWinnerLabel();
 	}
