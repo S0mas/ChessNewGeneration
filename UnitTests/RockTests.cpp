@@ -1,4 +1,5 @@
 #include "pch.h"
+#define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 #include "PieceTestsHead.h"
 #include "../ChessNewGeneration/Chessboard.h"
 

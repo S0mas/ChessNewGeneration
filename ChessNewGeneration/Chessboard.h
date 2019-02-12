@@ -45,7 +45,7 @@ public:
 		const auto wasFirstMove = movedPiece->hasNotMoved();
 		movedPiece->setPosition(move.destination_);
 		const auto& pieceToKillPosition = std::distance(pieces_.begin(), pieceToKill);
-		pieces_.killPiece(pieceToKillPosition);
+		pieces_.killPiece(static_cast<int>(pieceToKillPosition));
 		addMove(Move(move, movedPiece, wasFirstMove, pieceToKill != notFound()));
 	}
 

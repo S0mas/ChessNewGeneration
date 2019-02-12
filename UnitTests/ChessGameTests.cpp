@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 #include <gtest/gtest.h>
 #include <isolator.h>
 #define Tests
@@ -55,13 +56,13 @@ TEST_F(ChessGameTests, noCheckmate_haveLegalMoves) {
 TEST_F(ChessGameTests, check) {
 	ChessGame chess;
 	PRIVATE_WHEN_CALLED(&chess, isAttackPossible, TYPEOF(const Piece&), TYPEOF(const Piece&)).Return(true);
-	EXPECT_TRUE(chess.isThereCheck(Player::White));
+	EXPECT_TRUE(chess.isThereCheck(Player::White, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, noCheck) {
 	ChessGame chess;
 	PRIVATE_WHEN_CALLED(&chess, isAttackPossible, TYPEOF(const Piece&), TYPEOF(const Piece&)).Return(false);
-	EXPECT_FALSE(chess.isThereCheck(Player::Black));
+	EXPECT_FALSE(chess.isThereCheck(Player::Black, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, ownerIsActivePlayer) {
@@ -230,13 +231,13 @@ TEST_F(ChessGameTests, moveIsIllegal_isNotConsistentWithOtherRules) {
 
 TEST_F(ChessGameTests, consistentWithOtherRules) {
 	ChessGame chess;
-	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player))).Return(false);
+	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player), ANY_REF(ChessBoard))).Return(false);
 	EXPECT_TRUE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 
 TEST_F(ChessGameTests, notConsistentWithOtherRules) {
 	ChessGame chess;
-	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player))).Return(true);
+	WHEN_CALLED(chess.isThereCheck(ANY_REF(Player), ANY_REF(ChessBoard))).Return(true);
 	EXPECT_FALSE(chess.isConsistentWithOtherRules({ Position("A1"), Position("A5") }, chess.chessboard_));
 }
 

@@ -13,7 +13,7 @@ class ChessGameGUI final : public QWidget {
 
 	void updateWinnerLabel() const noexcept {
 		if(chess_.isGameEnded())
-			winnerLabel->setText("The winner is: " + chess_.getWinner());
+			winnerLabel->setText("The winner is: " + QString::fromStdString(chess_.getWinner()));
 		else
 			winnerLabel->setText("Game in progress..");
 	}
@@ -89,7 +89,6 @@ public:
 
 public slots:
 	void selectMove() {
-		QObject* obj = sender();
 		const auto square = qobject_cast<Square*>(sender());
 		move_.push_back(square->getPosition());
 		if (move_.size() == 1)
@@ -111,7 +110,7 @@ public slots:
 		updateDisplay();
 	}
 
-	QPixmap getImage(const std::unique_ptr<Piece>& ptr) const noexcept {
+	QPixmap getImage(const std::unique_ptr<Piece>& ptr) const {
 		if (dynamic_cast<Pawn*>(ptr.get())) {
 			if(ptr->getOwner() == Player::White)
 				return QPixmap("Images/pawn_white.svg");

@@ -1,4 +1,5 @@
 #include "pch.h"
+#define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 #include <gtest/gtest.h>
 #include "../ChessNewGeneration/Position.h"
 TEST(PositionTests, StingTranslationValid) {

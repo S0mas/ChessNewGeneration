@@ -1,6 +1,6 @@
 #pragma once
 #include "Chessboard.h"
-#include <QString>
+#include <string>
 
 class ChessGame {
 protected:
@@ -145,8 +145,8 @@ public:
 		chessboard_.reset();
 	}
 
-	QString getWinner() const noexcept {
-		QString result = "game in progress";
+	std::string getWinner() const noexcept {
+		auto result = "game in progress";
 		
 		if (isThereCheckmate())
 			result = waitingPlayer_ == Player::White ? "white" : "black";

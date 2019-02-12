@@ -78,7 +78,7 @@ public:
 	}
 
 	int piecesAlive() const noexcept {
-		return pieces_.size() - deadPiecesCounter;
+		return static_cast<int>(pieces_.size() - deadPiecesCounter);
 	}
 
 	auto getPiecesCopy() const noexcept {
