@@ -1,5 +1,5 @@
 #pragma once
-#include "Chessboard.h"
+#include "Command.h"
 #include <string>
 
 class ChessGame {
@@ -134,6 +134,35 @@ protected:
 	bool isValidMove(const SimpleMove& nextMove) const noexcept {
 		return std::find(legalMoves_.begin(), legalMoves_.end(), nextMove) != legalMoves_.end();
 	}
+
+	Command* translateToCommand(const SimpleMove& simpleMove) {
+		if (chessboard_.isPositionOccupied(simpleMove.origin_)) {
+			if (isPromotion(simpleMove))
+				return new Promotion;
+			if (isCastling(simpleMove))
+				return new Castling;
+			if (isEnPasant(simpleMove))
+				return new EnPassant;
+			return new DefaultMove;
+		}
+		return nullptr;
+	}
+
+	bool isPromotion(const SimpleMove& move) const {
+		const auto& piece = *chessboard_.getPieceByPosition(move.origin_);
+		return piece->isPawn() && move.destination_.isDestinationPromotionRow();
+	}
+
+	bool isCastling(const SimpleMove& move) const {
+		const auto& piece = *chessboard_.getPieceByPosition(move.origin_);
+		return piece->isKing() && !piece->isConsistentWithMoveRules(move.destination_);
+	}
+
+	bool isEnPasant(const SimpleMove& move) const {
+		const auto& piece = *chessboard_.getPieceByPosition(move.origin_);
+		return piece->isPawn() && !piece->isConsistentWithMoveRules(move.destination_) && !chessboard_.isPositionOccupied(move.destination_);
+	}
+
 public:
 	ChessGame() noexcept {
 		activePlayer_ = Player::White;

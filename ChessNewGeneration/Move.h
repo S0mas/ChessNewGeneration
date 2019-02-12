@@ -1,5 +1,4 @@
 #pragma once
-#include "Position.h"
 #include "Piece.h"
 
 struct SimpleMove {
@@ -24,3 +23,8 @@ struct Move {
 	const bool wasFirstMove_;
 	const bool wasPieceKilled_;
 };
+
+
+
+
+

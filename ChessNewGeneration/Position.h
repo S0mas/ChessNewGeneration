@@ -72,6 +72,10 @@ public:
 		return route;
 	}
 
+	bool isDestinationPromotionRow() const noexcept {
+		return row_ == 7 || row_ == 0;
+	}
+
 	class InvalidPositionException final : public std::exception {
 		const char *what() const noexcept override {
 			return "Invalid position specified";

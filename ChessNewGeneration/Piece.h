@@ -47,6 +47,10 @@ public:
 		return false;
 	}
 
+	virtual bool isPawn() const noexcept {
+		return false;
+	}
+
 	virtual std::unique_ptr<Piece> clone() const = 0;
 
 	virtual bool isConsistentWithMoveRules(const Position& destPosition) const noexcept = 0;
@@ -149,6 +153,10 @@ public:
 
 	bool isConsistentWithAttackRules(const Position& destPosition) const noexcept final {
 		return position_.row_ + static_cast<int>(owner_) == destPosition.row_ && std::abs(position_.column_ - destPosition.column_) == 1;
+	}
+
+	bool isPawn() const noexcept final {
+		return true;
 	}
 
 	std::unique_ptr<Piece> clone() const final {
