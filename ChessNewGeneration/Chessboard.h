@@ -77,4 +77,12 @@ public:
 	void reset() noexcept {
 		while (undoMove()) {};
 	}
+
+	Move getLastMove() const {
+		return moves_.top();
+	}
+
+	bool wasThereAnyMoves() const {
+		return moves_.empty();
+	}
 };

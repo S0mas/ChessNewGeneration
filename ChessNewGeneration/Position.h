@@ -76,6 +76,10 @@ public:
 		return row_ == 7 || row_ == 0;
 	}
 
+	bool isCastlingColumn() const noexcept {
+		return column_ == 2 || column_ == 6;
+	}
+
 	class InvalidPositionException final : public std::exception {
 		const char *what() const noexcept override {
 			return "Invalid position specified";

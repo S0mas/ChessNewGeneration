@@ -22,6 +22,7 @@ struct Move {
 	Piece* const movedPiece_;// no ownership
 	const bool wasFirstMove_;
 	const bool wasPieceKilled_;
+	const bool wasPromotion_;
 };
 
 

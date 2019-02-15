@@ -78,7 +78,7 @@ class King final : public Piece {
 public:
 	constexpr explicit King(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
-		return std::abs(position_.column_ - destPosition.column_) <= 1 && std::abs(position_.row_ - destPosition.row_) <= 1;
+		return (std::abs(position_.column_ - destPosition.column_) + std::abs(position_.row_ - destPosition.row_)) == 1;
 	}
 
 	bool isKing() const noexcept final {
