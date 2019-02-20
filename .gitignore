@@ -344,3 +344,4 @@ ASALocalRun/
 /ChessNewGeneration/Makefile
 /ChessNewGeneration/Makefile.Debug
 /ChessNewGeneration/Makefile.Release
+/ChessNewGeneration/GeneratedFiles/qrc_resources.cpp

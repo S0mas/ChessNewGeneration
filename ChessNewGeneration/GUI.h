@@ -113,33 +113,33 @@ public slots:
 	QPixmap getImage(const std::unique_ptr<Piece>& ptr) const {
 		if (dynamic_cast<Pawn*>(ptr.get())) {
 			if(ptr->getOwner() == Player::White)
-				return QPixmap("Images/pawn_white.svg");
-			return QPixmap("Images/pawn_black.svg");
+				return QPixmap(":/images/pawn_white.svg");
+			return QPixmap(":/images/pawn_black.svg");
 		}
 		if (dynamic_cast<Knight*>(ptr.get())) {
 			if (ptr->getOwner() == Player::White)
-				return QPixmap("Images/knight_white.svg");
-			return QPixmap("Images/knight_black.svg");
+				return QPixmap(":/images/knight_white.svg");
+			return QPixmap(":/images/knight_black.svg");
 		}
 		if (dynamic_cast<Bishop*>(ptr.get())) {
 			if (ptr->getOwner() == Player::White)
-				return QPixmap("Images/bishop_white.svg");
-			return QPixmap("Images/bishop_black.svg");
+				return QPixmap(":/images/bishop_white.svg");
+			return QPixmap(":/images/bishop_black.svg");
 		}
 		if (dynamic_cast<Rook*>(ptr.get())) {
 			if (ptr->getOwner() == Player::White)
-				return QPixmap("Images/rook_white.svg");
-			return QPixmap("Images/rook_black.svg");
+				return QPixmap(":/images/rook_white.svg");
+			return QPixmap(":/images/rook_black.svg");
 		}
 		if (dynamic_cast<Queen*>(ptr.get())) {
 			if (ptr->getOwner() == Player::White)
-				return QPixmap("Images/Queen_white.svg");
-			return QPixmap("Images/Queen_black.svg");
+				return QPixmap(":/images/queen_white.svg");
+			return QPixmap(":/images/queen_black.svg");
 		}
 		if (dynamic_cast<King*>(ptr.get())) {
 			if (ptr->getOwner() == Player::White)
-				return QPixmap("Images/King_white.svg");
-			return QPixmap("Images/King_black.svg");
+				return QPixmap(":/images/king_white.svg");
+			return QPixmap(":/images/king_black.svg");
 		}
 		throw std::exception();
 	}
