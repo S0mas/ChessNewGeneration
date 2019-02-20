@@ -11,7 +11,7 @@ class ChessGameGUI final : public QWidget {
 	std::vector<Square*> board_;
 	QLabel* winnerLabel;
 
-	void updateWinnerLabel() const noexcept {
+	void updateWinnerLabel() noexcept {
 		if(chess_.isGameEnded())
 			winnerLabel->setText("The winner is: " + QString::fromStdString(chess_.getWinner()));
 		else

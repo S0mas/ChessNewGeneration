@@ -8,6 +8,7 @@ protected:
 	Position position_;
 	const Player owner_;
 	bool firstMove_ = true;
+	bool live = true;
 public:
 	constexpr explicit Piece(const Position& pos, const Player owner = Player::White) noexcept : position_(pos), owner_(owner) {}
 	Piece(const Piece& original) noexcept = default;
@@ -30,6 +31,18 @@ public:
 
 	void setFirstMove(const bool newValue) noexcept {
 		firstMove_ = newValue;
+	}
+
+	void kill() noexcept {
+		live = false;
+	}
+
+	void resurrect() noexcept {
+		live = true;
+	}
+
+	bool isAlive() const noexcept {
+		return live;
 	}
 
 	virtual void setPosition(const Position& destination) noexcept {
@@ -78,7 +91,7 @@ class King final : public Piece {
 public:
 	constexpr explicit King(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
-		return (std::abs(position_.column_ - destPosition.column_) + std::abs(position_.row_ - destPosition.row_)) == 1;
+		return std::abs(position_.column_ - destPosition.column_) <=1 && + std::abs(position_.row_ - destPosition.row_) <= 1;
 	}
 
 	bool isKing() const noexcept final {
@@ -108,6 +121,22 @@ public:
 	constexpr explicit Rook(const Position& pos, const Player owner = Player::White) noexcept : Piece(pos, owner) {}
 	bool isConsistentWithMoveRules(const Position& destPosition) const noexcept final {
 		return position_.column_ == destPosition.column_ || position_.row_ == destPosition.row_;
+	}
+
+	void castle() noexcept {
+		if (position_ == Position("A1") || position_ == Position("A8"))
+			position_.column_ += 3;
+		else
+			position_.column_ -= 2;
+		firstMove_ = false;
+	}
+
+	void undoCastle() noexcept {
+		if (position_ == Position("A1") || position_ == Position("A8"))
+			position_.column_ -= 3;
+		else
+			position_.column_ += 2;
+		firstMove_ = true;
 	}
 
 	std::unique_ptr<Piece> clone() const final {

@@ -1,13 +1,14 @@
 #pragma once
-#include "Command.h"
+#include "Chessboard.h"
 #include <string>
+#include <iostream>
 
 class ChessGame {
 protected:
-	ChessBoard chessboard_;
+	ChessBoard chessboard;
 	Player activePlayer_;
 	Player waitingPlayer_;
-	mutable std::vector<SimpleMove> legalMoves_;
+	std::vector<Move> legalMoves_;
 #ifdef Tests
 	FRIEND_TEST(ChessGameTests, checkmate);
 	FRIEND_TEST(ChessGameTests, noCheckmate_stalemate);
@@ -44,31 +45,30 @@ protected:
 	FRIEND_TEST(ChessGameTests, gameEnded_Stalemate);
 	FRIEND_TEST(ChessGameTests, gameNotEnded);
 #endif	
-
 	bool isAttackPossible(const Piece& attacker, const Piece& target) const noexcept {
 		return attacker.getOwner() != target.getOwner() &&
 			attacker.isConsistentWithAttackRules(target.getPosition()) &&
-			!chessboard_.isThereCollision(attacker.getRoute(target.getPosition()));
+			!chessboard.isThereCollision(attacker.getRoute(target.getPosition()));
 	}
 
 	bool isMovePossible(const Piece& mover, const Position& destination) const noexcept {
 		return mover.isConsistentWithMoveRules(destination) &&
-			!chessboard_.isPositionOccupied(destination) &&
-			!chessboard_.isThereCollision(mover.getRoute(destination));
+			!chessboard.isPositionOccupied(destination) &&
+			!chessboard.isThereCollision(mover.getRoute(destination));
 	}
 
-	bool isThereCheckAfterMove(const SimpleMove& move) const {
-		auto chessboardCopy(chessboard_);
-		chessboardCopy.doMove(move);
-		const auto& result = !isThereCheck(activePlayer_, chessboardCopy);
+	bool isThereCheckAfterMove(const Move& move) {
+		chessboard.doMove(move);
+		const auto& result = isThereCheck(activePlayer_);
+		chessboard.undoMove();
 		return result;
 	}
 
-	bool isThereCheck(const Player& playerToVerify, const ChessBoard& chessboard) const noexcept {
+	bool isThereCheck(const Player& playerToVerify) const noexcept {
 		const auto& king = chessboard.findKing(playerToVerify);
 		const auto& pieces = chessboard.getPieces();
 		return pieces.end() != std::find_if(pieces.begin(), pieces.end(), [&king, this](const auto& piece) {
-			return isAttackPossible(*piece, **king);
+			return piece->isAlive() && isAttackPossible(*piece, **king);
 		});
 	}
 
@@ -76,87 +76,97 @@ protected:
 		return piece.getOwner() == activePlayer_;
 	}
 
-	bool isConsistentWithOtherRules(const SimpleMove& move, ChessBoard& chessBoardCopy) const noexcept {
-		//is there check after move
-		chessBoardCopy.doMove(move);
-		const auto& result = !isThereCheck(activePlayer_, chessBoardCopy);
-		chessBoardCopy.undoMove();
-		return result;
-	}
-
-	bool isAttackLegal(const Piece& attacker, const Piece& target, ChessBoard& chessBoardCopy) const noexcept {
-		auto const& isLegal = !target.isKing() && isAttackPossible(attacker, target);
-		return isLegal && isConsistentWithOtherRules({ attacker.getPosition(), target.getPosition() }, chessBoardCopy);
-	}
-
-	bool isMoveLegal(const Piece& pieceToMove, const Position& destination, ChessBoard& chessBoardCopy) const noexcept {
-		auto const& isLegal = isMovePossible(pieceToMove, destination);
-		return isLegal && isConsistentWithOtherRules({ pieceToMove.getPosition(), destination }, chessBoardCopy);
-	}
-
-	bool checkIfMoveIsLegal(const SimpleMove& simpleMove, ChessBoard& chessBoardCopy) const noexcept {
-		const auto& pieceToMove = chessboard_.getPieceByPosition(simpleMove.origin_);
-		if (pieceToMove != chessboard_.notFound() && isOwnerActivePlayer(**pieceToMove)) {
-			const auto& pieceToAttack = chessboard_.getPieceByPosition(simpleMove.destination_);
-			return pieceToAttack == chessboard_.notFound() ? isMoveLegal(**pieceToMove, simpleMove.destination_, chessBoardCopy) : isAttackLegal(**pieceToMove, **pieceToAttack, chessBoardCopy);
-		}
-		return false;
-	}
-
-	auto getAllLegalMovesForPiece(const Piece& piece, ChessBoard& chessBoardCopy) const noexcept {
-		const auto& possibleDestination = piece.getAllPossibleMoves();
-		const auto& origin = piece.getPosition();
-		std::vector<SimpleMove> legalMoves;
-		for (const auto& dest : possibleDestination) {
-			if (origin == dest) continue;
-			SimpleMove move = { origin, dest };
-			if (checkIfMoveIsLegal(move, chessBoardCopy))
-				legalMoves.push_back(std::move(move));
-		}
-		return legalMoves;
-	}
-
-	void calculateAllLegalMoves(const Player& playerToMove) const noexcept {
+	void calculateAllLegalMoves() noexcept {
 		legalMoves_.clear();
-		auto chessboardCopy(chessboard_);
-		for (const auto& piece : chessboardCopy.getPieces()) {
-			if(piece->getOwner() == playerToMove)
-				for (auto&& legalMove : getAllLegalMovesForPiece(*piece, chessboardCopy))
-					legalMoves_.push_back(std::move(legalMove));
+		for (const auto& simpleMove : chessboard.getAllPossibleMoves()) {
+			auto move = translateSimpleMoveToMove(simpleMove);
+			if (move.type != Move::MoveType::Invalid && !isThereCheckAfterMove(move))
+				legalMoves_.push_back(move);			
 		}
 	}
 
 	bool isThereCheckmate() const noexcept {
-		return isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
+		return isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
 	bool isThereStalemate() const noexcept {
-		return !isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
+		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
 	bool isThereDraw() const noexcept {
-		return !isThereCheck(activePlayer_, chessboard_) && legalMoves_.empty();
+		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	bool isValidMove(const SimpleMove& nextMove) const noexcept {
-		return std::find(legalMoves_.begin(), legalMoves_.end(), nextMove) != legalMoves_.end();
+	Move translateSimpleMoveToMove(const SimpleMove& sm) noexcept {
+		auto origin = chessboard.getPieceByPosition(sm.origin_);
+		if (origin == chessboard.notFound() || !isOwnerActivePlayer(**origin))
+			return Move::invalid();
+		auto target = chessboard.getPieceByPosition(sm.destination_);
+		auto targetPiece = (target == chessboard.notFound()) ? nullptr : target->get();
+		if (targetPiece && targetPiece->isKing())
+			return Move::invalid();
+		if (isValidPromotionMove(**origin, targetPiece, sm.destination_))
+			return Move(origin->get(), sm, targetPiece, Move::MoveType::Promotion);
+		else if (isValidDefaultMove(**origin, targetPiece, sm.destination_))
+			return Move(origin->get(), sm, targetPiece);
+		else if (isValidCastlingMove(**origin, targetPiece, sm.destination_))
+			return Move(origin->get(), sm, nullptr, Move::MoveType::Castle, findCastlingTower(sm.destination_));
+		else if (isValidEnPasantMove(**origin, targetPiece, sm.destination_))
+			return Move(origin->get(), sm, findEnPassantKilledPawn(sm.destination_), Move::MoveType::EnPassant);
+		return Move::invalid();
 	}
 
-	Command* translateToCommand(const SimpleMove& simpleMove) {
-		if (chessboard_.isPositionOccupied(simpleMove.origin_)) {
-			if (isPromotion(simpleMove))
-				return new Promotion;
-			if (isCastling(simpleMove))
-				return new Castling;
-			if (isEnPasant(simpleMove))
-				return new EnPassant;
-			return new DefaultMove;
+	bool isValidPromotionMove(const Piece& subject, const Piece* target, const Position& destination) const {
+		return isValidDefaultMove(subject, target, destination) && subject.isPawn() && destination.isDestinationPromotionRow();
+	}
+
+	bool isValidCastlingMove(const Piece& subject, const Piece* target, const Position& destination) {
+		return subject.isKing() && subject.hasNotMoved() && subject.getPosition().row_ == destination.row_ && destination.isCastlingColumn() && !chessboard.isPositionOccupied(destination)
+			&& castlingTowerHasNotMoved(destination) && !chessboard.isThereCollision(subject.getPosition().getSimplestRoute(destination)) && !isThereCheckAfterMove(translateSimpleMoveToMove(SimpleMove(subject.getPosition(), subject.getPosition().getSimplestRoute(destination)[0])));
+	}
+
+	bool isValidEnPasantMove(const Piece& subject, const Piece* target, const Position& destination) const {
+		return subject.isPawn() && isEnpassantRow(destination.row_) && subject.isConsistentWithAttackRules(destination) && checkIfLastMoveWasTheLongJumpOfSpecificColumnPawn(destination);
+	}
+
+	bool isValidDefaultMove(const Piece& subject, const Piece* target, const Position& destination) const {
+		return isMovePossible(subject, destination) || target && isAttackPossible(subject, *target);
+	}
+
+	bool checkIfLastMoveWasTheLongJumpOfSpecificColumnPawn(const Position& destination) const {
+		if (chessboard.wasThereAnyMove()) {
+			const auto& lastMove = chessboard.getLastMove();
+			const auto& wasLongJump = abs(lastMove.getSimpleMove().origin_.row_ - lastMove.getSimpleMove().destination_.row_) == 2;
+			return wasLongJump && lastMove.getSubject()->isPawn() && lastMove.getSimpleMove().origin_.column_ == destination.column_;
 		}
-		return nullptr;
+		return false;
+	}
+
+	Rook* findCastlingTower(const Position& castlingDestination) const {
+		Position rookPosition("A2");
+		if (castlingDestination.column_ == 2)
+			rookPosition = (castlingDestination.row_ == 7) ? Position("A8") : Position("A1");
+		else
+			rookPosition = (castlingDestination.row_ == 7) ? Position("H8") : Position("H1");
+		auto rook = chessboard.getPieceByPosition(rookPosition);
+		return (rook != chessboard.notFound() && dynamic_cast<Rook*>(rook->get())) ? dynamic_cast<Rook*>(rook->get()) : nullptr;
+	}
+
+	bool castlingTowerHasNotMoved(const Position& castlingDestination) const {
+		const auto& tower = findCastlingTower(castlingDestination);
+		return tower ? tower->hasNotMoved() : false;
 	}
 
 
+	bool isEnpassantRow(const int row) const noexcept {
+		return activePlayer_ == Player::White ? row == 5 : row == 2;
+	}
 
+	Pawn* findEnPassantKilledPawn(const Position& enPassantDestination) const {
+		Position killedPawnPosition(enPassantDestination.column_, enPassantDestination.row_ == 2 ? 3 : 4);
+		auto pawn = chessboard.getPieceByPosition(killedPawnPosition);
+		return dynamic_cast<Pawn*>(pawn->get());
+	}
 public:
 	ChessGame() noexcept {
 		activePlayer_ = Player::White;
@@ -165,12 +175,19 @@ public:
 	virtual ~ChessGame() = default;
 
 	void resetGame() {
-		chessboard_.reset();
+		while (chessboard.wasThereAnyMove())
+			undoMove();
+	}
+
+	void undoMove() noexcept {
+		if (chessboard.wasThereAnyMove()) {
+			chessboard.undoMove();
+			std::swap(activePlayer_, waitingPlayer_);
+		}
 	}
 
 	std::string getWinner() const noexcept {
 		auto result = "game in progress";
-		
 		if (isThereCheckmate())
 			result = waitingPlayer_ == Player::White ? "white" : "black";
 		else if (isThereStalemate())
@@ -179,160 +196,21 @@ public:
 	}
 
 	void nextMove(const SimpleMove& nextMove) noexcept {
-		if(!isGameEnded() && isValidMove(nextMove)) {
-			chessboard_.doMove(nextMove);
-			std::swap(activePlayer_, waitingPlayer_);
+		if(!isGameEnded()) {
+			const auto& move = std::find(legalMoves_.begin(), legalMoves_.end(), nextMove);
+			if (move != legalMoves_.end()) {
+				chessboard.doMove(*move);
+				std::swap(activePlayer_, waitingPlayer_);
+			}
 		}
-	}
-
-	void undoMove() noexcept {
-		if(chessboard_.undoMove())
-			std::swap(activePlayer_, waitingPlayer_);
 	}
 
 	auto getPiecesState() const noexcept  {
-		std::vector<std::unique_ptr<Piece>> piecesCopy;
-		for(const auto& piece : chessboard_.getPieces())
-			piecesCopy.push_back(piece->clone());
-		
-		return piecesCopy;
+		return chessboard.getPieces().getPiecesCopy();
 	}
 
-	bool isGameEnded() const noexcept {
-		calculateAllLegalMoves(activePlayer_);
+	bool isGameEnded() noexcept {
+		calculateAllLegalMoves();
 		return isThereCheckmate() || isThereStalemate();// && other stuff...;
 	}
-
-	class MoveX {
-		Piece* subject;
-		Piece* target;
-		Position destination;
-	public:
-		MoveX() {}
-		virtual ~MoveX() = default;
-		virtual bool checkPreConditions(const ChessBoard& chessboard) = 0;
-		virtual void execute(ChessBoard&) = 0;
-	};
-
-
-	class DefaultMove : public MoveX {
-	public:
-		DefaultMove() {}
-		bool checkPreConditions(const ChessBoard& chessboard) override {
-
-			return false;
-		}
-
-		void execute(ChessBoard&) override {
-			return;
-		}
-	};
-
-	class Castling : public MoveX {
-	public:
-		Castling() {}
-		bool checkPreConditions(const ChessBoard& chessboard) override {
-			return false;
-		}
-
-		void execute(ChessBoard&) override {
-			return;
-		}
-	};
-
-	class EnPassant : public MoveX {
-	public:
-		EnPassant() {}
-		bool checkPreConditions(const ChessBoard& chessboard) override {
-			return false;
-		}
-
-		void execute(ChessBoard&) override {
-			return;
-		}
-	};
-
-	class Promotion : public DefaultMove {
-	public:
-		Promotion() {}
-		bool checkPreConditions(const ChessBoard& chessboard) override {
-			return false;
-		}
-
-		void execute(ChessBoard&) override {
-			return;
-		}
-	};
-
-
-	class Invalid : public MoveX {
-	public:
-		Invalid() {}
-		bool checkPreConditions(const ChessBoard& chessboard) override {
-			return false;
-		}
-
-		void execute(ChessBoard&) override {
-			return;
-		}
-	};
-
-	MoveX* translateSimpleMoveToMove(const SimpleMove& sm) const noexcept {
-		auto origin = chessboard_.getPieceByPosition(sm.origin_);
-		auto target = chessboard_.getPieceByPosition(sm.destination_);
-
-		if(origin == chessboard_.notFound() || !isOwnerActivePlayer(**origin))
-			return new Invalid;
-		auto targetPiece = (target == chessboard_.notFound()) ? nullptr : target->get();
-		if (targetPiece && targetPiece->isKing())
-			return new Invalid;
-		if(isValidPromotionMove(**origin, targetPiece, sm.destination_))
-			return new Promotion;
-		if(isValidDefaultMove(**origin, targetPiece, sm.destination_))
-			return new DefaultMove;
-		if (isValidCastlingMove(**origin, targetPiece, sm.destination_))
-			return new Castling;
-		if (isValidEnPasantMove(**origin, targetPiece, sm.destination_))
-			return new EnPassant;
-		return new Invalid;	
-	}
-
-	bool isValidPromotionMove(const Piece& subject, const Piece* target, const Position& destination) const {
-		
-		return isValidDefaultMove(subject, target, destination) && subject.isPawn() && destination.isDestinationPromotionRow();
-	}
-
-	bool isValidCastlingMove(const Piece& subject, const Piece* target, const Position& destination) const {
-	
-		return subject.isKing() && subject.hasNotMoved() && subject.getPosition().row_ == destination.row_ && destination.isCastlingColumn()
-			&& castlingTowerHasNotMoved(destination) && !chessboard_.isThereCollision(subject.getPosition().getSimplestRoute(destination)) && !isThereCheckAfterMove(SimpleMove(subject.getPosition(), subject.getPosition().getSimplestRoute(destination)[0]));
-	}
-
-	bool isValidEnPasantMove(const Piece& subject, const Piece* target, const Position& destination) const {
-		return subject.isPawn() && subject.isConsistentWithAttackRules(destination) && checkIfLastMoveWasTheLongJumpOfSpecificColumnPawn(destination);
-	}
-
-	bool isValidDefaultMove(const Piece& subject, const Piece* target, const Position& destination) const {
-		return isMovePossible(subject, destination) || target && isAttackPossible(subject, *target);
-	}
-
-	bool checkIfLastMoveWasTheLongJumpOfSpecificColumnPawn(const Position& destination) const {
-		if (chessboard_.wasThereAnyMoves()) {
-			const auto& lastMove = chessboard_.getLastMove();
-			const auto& wasLongJump = abs(lastMove.move_.origin_.row_ - lastMove.move_.destination_.row_) == 2;
-			return wasLongJump && lastMove.movedPiece_->isPawn() && lastMove.move_.origin_.column_ == destination.column_;
-		}
-		return false;
-	}
-
-	bool castlingTowerHasNotMoved(const Position& castlingDestination) const {
-		Position towerPosition("A2");
-		if (castlingDestination.column_ == 2)
-			towerPosition = (castlingDestination.row_ == 7) ? Position("A8") : Position("A1");
-		else
-			towerPosition = (castlingDestination.row_ == 7) ? Position("H8") : Position("H1");
-		auto tower = chessboard_.getPieceByPosition(towerPosition);
-		return tower != chessboard_.notFound() && (*tower)->hasNotMoved();
-	}
 };
-

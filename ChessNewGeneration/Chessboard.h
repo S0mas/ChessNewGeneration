@@ -8,10 +8,19 @@
 
 class ChessBoard {	
 	ChessPieces pieces_;
+	std::vector<SimpleMove> possibleMoves;
 	std::stack<Move> moves_;
 public:
-	ChessBoard() = default;
-	ChessBoard(const ChessBoard& cp) = default;
+	ChessBoard() {
+		for (const auto& origin : Board::getAllPossiblePositions())
+			for (const auto& destination : Board::getAllPossiblePositions())
+				if (origin != destination) possibleMoves.emplace_back(origin, destination);
+	}
+	ChessBoard(const ChessBoard& cp) = delete;
+	ChessBoard& operator=(const ChessBoard& cp) = delete;
+	ChessBoard(ChessBoard&& mv) = delete;
+	ChessBoard& operator=(ChessBoard&& mv) = delete;
+	~ChessBoard() = default;
 	auto findKing(const Player& owner) const noexcept {
 		return std::find_if(pieces_.begin(), pieces_.end(), [&owner](const auto& piece) {
 			return  piece->getOwner() == owner && piece->isKing();
@@ -20,7 +29,7 @@ public:
 
 	auto getPieceByPosition(const Position& position) const noexcept {
 		return std::find_if(pieces_.begin(), pieces_.end(), [&position](const auto& piece) {
-			return piece->getPosition() == position; 
+			return piece->isAlive() && piece->getPosition() == position; 
 		});
 	}
 
@@ -36,34 +45,16 @@ public:
 		return route.end() != std::find_if(route.begin(), route.end(), [this](const Position& position){ return isPositionOccupied(position);});
 	}
 
-	void doMove(const SimpleMove& move) {
-		const auto& pieceToKill = std::find_if(pieces_.begin(), pieces_.end(), [&move](const auto& piece) {
-			return piece->getPosition() == move.destination_;
-		});
-
-		auto movedPiece = getPieceByPosition(move.origin_)->get();
-		const auto wasFirstMove = movedPiece->hasNotMoved();
-		movedPiece->setPosition(move.destination_);
-		const auto& pieceToKillPosition = std::distance(pieces_.begin(), pieceToKill);
-		pieces_.killPiece(static_cast<int>(pieceToKillPosition));
-		addMove(Move(move, movedPiece, wasFirstMove, pieceToKill != notFound()));
-	}
-
-	bool undoMove() {
-		if(!moves_.empty()) {
-			const auto& moveToUndo = moves_.top();
-			moveToUndo.movedPiece_->setPosition(moveToUndo.move_.origin_);
-			moveToUndo.movedPiece_->setFirstMove(moveToUndo.wasFirstMove_);
-			if (moveToUndo.wasPieceKilled_)
-				pieces_.resurrectLastKilledPiece();
-			moves_.pop();
-			return true;
-		}
-		return false;
-	}
-
-	void addMove(const Move& move) noexcept {
+	void doMove(const Move& move) {
+		move.execute();
 		moves_.push(move);
+	}
+
+	void undoMove() noexcept {
+		if (wasThereAnyMove()) {
+			getLastMove().undo();
+			moves_.pop();
+		}	
 	}
 
 	auto& getPieces() noexcept {
@@ -74,15 +65,19 @@ public:
 		return pieces_;
 	}
 
-	void reset() noexcept {
-		while (undoMove()) {};
+	auto getPiecesCopy() const noexcept {
+		return pieces_.getPiecesCopy();
 	}
 
 	Move getLastMove() const {
 		return moves_.top();
 	}
 
-	bool wasThereAnyMoves() const {
-		return moves_.empty();
+	bool wasThereAnyMove() const noexcept {
+		return !moves_.empty();
+	}
+
+	std::vector<SimpleMove> getAllPossibleMoves() const noexcept {
+		return possibleMoves;
 	}
 };

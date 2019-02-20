@@ -4,8 +4,6 @@
 
 class ChessPieces {
 	std::array<std::unique_ptr<Piece>, 32> pieces_;
-		
-	int deadPiecesCounter = 0;
 public:
 	ChessPieces() noexcept {
 		auto i = 0;
@@ -44,48 +42,23 @@ public:
 		pieces_[i++] = std::make_unique<Pawn>(Position("H7"), Player::Black);
 	}
 	~ChessPieces() = default;
-	ChessPieces(const ChessPieces& cp) {
-		for (auto i = 0; i < pieces_.size(); ++i)
-			pieces_[i] = cp.pieces_[i]->clone();
-		deadPiecesCounter = cp.deadPiecesCounter;
-	}
-
-	ChessPieces(ChessPieces&& cp) noexcept {
-		std::swap(pieces_, cp.pieces_);
-		deadPiecesCounter = cp.deadPiecesCounter;
-	}
-
+	ChessPieces(const ChessPieces& cp) = delete;
+	ChessPieces(ChessPieces&& cp) = delete;
 	ChessPieces& operator=(const ChessPieces& cp) = delete;
 	ChessPieces& operator=(ChessPieces&& cp) = delete;
 
 	auto begin() const noexcept {
-		return pieces_.cbegin();
+		return pieces_.begin();
 	}
 	auto end() const noexcept {
-		return pieces_.cend() - deadPiecesCounter;
-	}
-
-	void killPiece(const int pieceToKillPosition) noexcept {
-
-		if (pieceToKillPosition < piecesAlive()) {
-			++deadPiecesCounter;
-			std::swap(pieces_.at(pieceToKillPosition), pieces_.at(pieces_.size() - deadPiecesCounter));
-		}
-	}
-
-	void resurrectLastKilledPiece() noexcept {
-		--deadPiecesCounter;
-	}
-
-	int piecesAlive() const noexcept {
-		return static_cast<int>(pieces_.size() - deadPiecesCounter);
+		return pieces_.end();
 	}
 
 	auto getPiecesCopy() const noexcept {
 		std::vector<std::unique_ptr<Piece>> piecesCopy;
-		for (const auto& piece : *this)
-			piecesCopy.push_back(piece->clone());
-
+		piecesCopy.reserve(32);
+		for (const auto& piece : pieces_)
+			if(piece->isAlive()) piecesCopy.push_back(piece->clone());
 		return piecesCopy;
 	}
 };

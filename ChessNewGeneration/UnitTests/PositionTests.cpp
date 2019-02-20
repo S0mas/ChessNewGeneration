@@ -1,7 +1,6 @@
 #include "pch.h"
 #define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
-#include <gtest/gtest.h>
-#include "../ChessNewGeneration/Position.h"
+#include "../Position.h"
 TEST(PositionTests, StingTranslationValid) {
 	Position position1("A4");
 	EXPECT_EQ(position1.column_, 0);
