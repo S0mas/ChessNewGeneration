@@ -44,6 +44,7 @@ TEST_F(PawnTests, validMovesAfterFirstMove_Black) {
 	pawn.setPosition(Position("C7"));
 	EXPECT_TRUE(pawn.isConsistentWithMoveRules(Position("C6")));
 }
+
 TEST_F(PawnTests, invalidMoves_Black) {
 	Pawn pawn(Position("C6"), Player::Black);
 	EXPECT_FALSE(pawn.isConsistentWithMoveRules(Position("D2")));

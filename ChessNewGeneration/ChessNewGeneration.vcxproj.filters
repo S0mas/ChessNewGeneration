@@ -29,10 +29,25 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-tidy" />
     <None Include="QtProjectFile.pro" />
+    <None Include="images\bishop_black.svg" />
+    <None Include="images\bishop_white.svg" />
+    <None Include="images\king_black.svg" />
+    <None Include="images\king_white.svg" />
+    <None Include="images\knight_black.svg" />
+    <None Include="images\knight_white.svg" />
+    <None Include="images\pawn_black.svg" />
+    <None Include="images\pawn_white.svg" />
+    <None Include="images\queen_black.svg" />
+    <None Include="images\queen_white.svg" />
+    <None Include="images\rook_black.svg" />
+    <None Include="images\rook_white.svg" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Position.h">
@@ -44,9 +59,6 @@
     <ClInclude Include="Chessboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChessGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Move.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -56,12 +68,27 @@
     <ClInclude Include="ChessPieces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ChessInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MockChessInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="GUI.h">
+    <QtMoc Include="Square.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Square.h">
+    <QtMoc Include="ChessBoardGUI.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="MainWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SingletonMove.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

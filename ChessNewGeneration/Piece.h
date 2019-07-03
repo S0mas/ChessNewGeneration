@@ -1,4 +1,5 @@
 #pragma once
+#include "ChessInterface.h"
 #include "Position.h"
 #include "Player.h"
 #include <vector>
@@ -44,6 +45,8 @@ public:
 	bool isAlive() const noexcept {
 		return live;
 	}
+
+	virtual PieceType getType() const noexcept = 0;
 
 	virtual void setPosition(const Position& destination) noexcept {
 		position_ = destination;
@@ -101,6 +104,10 @@ public:
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<King>(*this);
 	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhiteKing : PieceType::BlackKing;
+	}
 };
 
 class Queen final : public Piece {
@@ -113,6 +120,10 @@ public:
 
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Queen>(*this);
+	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhiteQueen : PieceType::BlackQueen;
 	}
 };
 
@@ -142,6 +153,10 @@ public:
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Rook>(*this);
 	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhiteRook : PieceType::BlackRook;
+	}
 };
 
 class Bishop final : public Piece {
@@ -153,6 +168,10 @@ public:
 
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Bishop>(*this);
+	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhiteBishop : PieceType::BlackBishop;
 	}
 };
 
@@ -170,6 +189,10 @@ public:
 
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Knight>(*this);
+	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhiteKnight : PieceType::BlackKnight;
 	}
 };
 
@@ -190,5 +213,9 @@ public:
 
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Pawn>(*this);
+	}
+
+	virtual PieceType getType() const noexcept {
+		return getOwner() == Player::White ? PieceType::WhitePawn : PieceType::BlackPawn;
 	}
 };

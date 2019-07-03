@@ -49,16 +49,9 @@ TEST_F(PieceTests, setPosition) {
 
 TEST_F(PieceTests, getRoute_ValidMove_InvalidAttack) {
 	Queen queen(Position("D5"));
-	//WHEN_CALLED(queen.isConsistentWithMoveRules(ANY_REF(Position))).Return(true);
-	//WHEN_CALLED(queen.isConsistentWithAttackRules(ANY_REF(Position))).Return(false);
-
-	Position p("A1");
-	std::vector<Position> dummyRoute;
-	dummyRoute.push_back(Position("D1"));
-	dummyRoute.push_back(Position("D2"));
-	//WHEN_CALLED(p.getSimplestRoute(ANY_REF(Position))).Return(BY_VAL(dummyRoute));
-
-	EXPECT_EQ(dummyRoute, queen.getRoute(Position("F3")));
+	std::vector<Position> route;
+	route.push_back(Position("E4"));
+	EXPECT_EQ(route, queen.getRoute(Position("F3")));
 }
 
 TEST_F(PieceTests, getRoute_InvalidMove_ValidAttack) {

@@ -29,12 +29,3 @@ TEST_F(KingTests, invalidMoves) {
 	EXPECT_FALSE(king.isConsistentWithMoveRules(Position("C2")));
 	EXPECT_FALSE(king.isConsistentWithMoveRules(Position("D6")));
 }
-
-TEST_F(KingTests, attackRulesUsesMoveRules) {
-	King king(Position("C4"));
-	const Position newPosition("B3");
-
-	//WHEN_CALLED(king.isConsistentWithMoveRules(newPosition)).Return(true);
-	king.isConsistentWithAttackRules(newPosition);
-	//ASSERT_WAS_CALLED(king.isConsistentWithMoveRules(newPosition));
-}

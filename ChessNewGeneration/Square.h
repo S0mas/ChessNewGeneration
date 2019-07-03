@@ -1,65 +1,56 @@
 #pragma once
-#include <string>
-#include <QLabel>
-#include "Position.h"
-#include <QWidget>
-#include <QLabel>
-#include <QGraphicsPixmapItem>
+#include <QPushButton>
+#include <QPixmap>
+#include "SingletonMove.h"
 
-class Square : public QLabel {
+static std::string coordsToPosition(const unsigned column, const unsigned row) {
+	if (column > 7 || row > 7)
+		throw std::runtime_error("wrong cooridnates!");
+	std::string position;
+	position.push_back(static_cast<char>(static_cast<unsigned>('A') + column));
+	position.push_back(static_cast<char>(static_cast<unsigned>('1') + row));
+	return position;
+}
+
+class Square : public QPushButton {
 	Q_OBJECT
-	Position position;
-	QString background;
-	QPixmap image;
-	bool isBlack() const noexcept {
-		return (position.column_ + position.row_) % 2 == 0;
+	unsigned column;
+	unsigned row;
+	std::string position;
+	void activate() {
+		setStyleSheet("background-color: " + QColor(149, 137, 53).name());
 	}
 public:
-	Square(const int column, const int row, QWidget *parent = 0) : QLabel(parent), position(column, row) {
-		if(isBlack())
-			background = "QLabel {background-color: rgb(47,79,79);}:hover{background-color: rgb(170,85,127);}";
-		else 
-			background = "QLabel {background-color: rgb(211,211,200);}:hover{background-color: rgb(170,95,127);}";
-		this->setMinimumSize(QSize(64, 64));
-		this->setStyleSheet(background);
-		QSizePolicy p = this->sizePolicy();
-		p.setHeightForWidth(true);
-		p.setWidthForHeight(true);
-		this->setSizePolicy(p);
+	Square() : position("unknown") {}
+	Square(const unsigned column, const unsigned row) : column(column), row(row) {
+		position = coordsToPosition(column, row);
+		setFixedSize(QSize(60, 60));
+		setStyleSheet("border: none;");	
+		deactivate();
+		setAutoFillBackground(true);
+		connect(this, SIGNAL(clicked()), this, SLOT(updateMove()));
+		update();
 	}
 
-	void resizeEvent(QResizeEvent* event) final {
-		if(!image.isNull())
-			this->setPixmap(image.scaled(this->width(), this->height(), Qt::KeepAspectRatio));
-	}
-
-	void setPieceImage(const QPixmap& pixmap) noexcept {
-		image = pixmap;
-		this->setPixmap(image.scaled(this->width(), this->height(), Qt::KeepAspectRatio));
-	}
-
-	void removeImage() noexcept {
-		image = QPixmap();
-		this->setPixmap(image);
-	}
-
-	Position getPosition() const noexcept {
+	std::string getPosition() {
 		return position;
 	}
 
-	void activate() noexcept {
-		this->setStyleSheet("QLabel {background-color: rgb(249, 166, 2);}:hover{background-color: rgb(249,166,2);}");
+	void setImage(const QIcon& icon) {
+		setIcon(icon);
+		setIconSize(QSize(50, 50));
+		update();
 	}
 
-	void deactivate() noexcept {
-		this->setStyleSheet(background);
+	void deactivate() {
+		if ((column + row) % 2)
+			setStyleSheet("background-color: " + QColor(245, 220, 175).name());
+		else
+			setStyleSheet("background-color: " + QColor(90, 50, 40).name());
 	}
-
-signals:
-	void clicked();
-
-protected:
-	void mousePressEvent(QMouseEvent* event) final {
-		emit clicked();
+public slots:
+	void updateMove() {
+		activate();
+		SingletonMove::getSingleton()->setPosition(position);
 	}
 };

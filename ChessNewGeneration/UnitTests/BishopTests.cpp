@@ -30,12 +30,3 @@ TEST_F(BishopTests, invalidMoves) {
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("G4")));
 	EXPECT_FALSE(bishop.isConsistentWithMoveRules(Position("C8")));
 }
-
-TEST_F(BishopTests, attackRulesUsesMoveRules) {
-	Bishop bishop(Position("C4"));
-	const Position newPosition("B3");
-
-//	WHEN_CALLED(bishop.isConsistentWithMoveRules(newPosition)).Return(true);
-//	bishop.isConsistentWithAttackRules(newPosition);
-	//ASSERT_WAS_CALLED(bishop.isConsistentWithMoveRules(newPosition));
-}

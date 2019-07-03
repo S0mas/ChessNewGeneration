@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-class ChessGame {
+class ChessGame : public ChessInterface {
 protected:
 	ChessBoard chessboard;
 	Player activePlayer_;
@@ -79,7 +79,7 @@ protected:
 	void calculateAllLegalMoves() noexcept {
 		legalMoves_.clear();
 		for (const auto& simpleMove : chessboard.getAllPossibleMoves()) {
-			auto move = translateSimpleMoveToMove(simpleMove);
+			auto move = isValidMove(simpleMove);
 			if (move.type != Move::MoveType::Invalid && !isThereCheckAfterMove(move))
 				legalMoves_.push_back(move);			
 		}
@@ -97,7 +97,7 @@ protected:
 		return !isThereCheck(activePlayer_) && legalMoves_.empty();
 	}
 
-	Move translateSimpleMoveToMove(const SimpleMove& sm) noexcept {
+	Move isValidMove(const SimpleMove& sm) noexcept {
 		auto origin = chessboard.getPieceByPosition(sm.origin_);
 		if (origin == chessboard.notFound() || !isOwnerActivePlayer(**origin))
 			return Move::invalid();
@@ -122,7 +122,7 @@ protected:
 
 	bool isValidCastlingMove(const Piece& subject, const Piece* target, const Position& destination) {
 		return subject.isKing() && subject.hasNotMoved() && subject.getPosition().row_ == destination.row_ && destination.isCastlingColumn() && !chessboard.isPositionOccupied(destination)
-			&& castlingTowerHasNotMoved(destination) && !chessboard.isThereCollision(subject.getPosition().getSimplestRoute(destination)) && !isThereCheckAfterMove(translateSimpleMoveToMove(SimpleMove(subject.getPosition(), subject.getPosition().getSimplestRoute(destination)[0])));
+			&& hasCastlingTowerNotMoved(destination) && !chessboard.isThereCollision(subject.getPosition().getSimplestRoute(destination)) && !isThereCheckAfterMove(isValidMove(SimpleMove(subject.getPosition(), subject.getPosition().getSimplestRoute(destination)[0])));
 	}
 
 	bool isValidEnPasantMove(const Piece& subject, const Piece* target, const Position& destination) const {
@@ -152,7 +152,7 @@ protected:
 		return (rook != chessboard.notFound() && dynamic_cast<Rook*>(rook->get())) ? dynamic_cast<Rook*>(rook->get()) : nullptr;
 	}
 
-	bool castlingTowerHasNotMoved(const Position& castlingDestination) const {
+	bool hasCastlingTowerNotMoved(const Position& castlingDestination) const {
 		const auto& tower = findCastlingTower(castlingDestination);
 		return tower ? tower->hasNotMoved() : false;
 	}
@@ -167,6 +167,7 @@ protected:
 		auto pawn = chessboard.getPieceByPosition(killedPawnPosition);
 		return dynamic_cast<Pawn*>(pawn->get());
 	}
+
 public:
 	ChessGame() noexcept {
 		activePlayer_ = Player::White;
@@ -179,11 +180,38 @@ public:
 			undoMove();
 	}
 
-	void undoMove() noexcept {
+	GameStatus getGameStatus() const override {
+		return GameStatus::IN_PROGRESS;
+	}
+
+	bool undoMove() override {
 		if (chessboard.wasThereAnyMove()) {
 			chessboard.undoMove();
 			std::swap(activePlayer_, waitingPlayer_);
+			return true;
 		}
+		else
+			return false;
+	}
+
+	bool move(const std::string& originPosition, const std::string& destinationPosition) override {
+		auto nextMove = SimpleMove(Position(originPosition), Position(destinationPosition));
+		if(!isGameEnded()) {
+			const auto& move = std::find(legalMoves_.begin(), legalMoves_.end(), nextMove);
+			if (move != legalMoves_.end()) {
+				chessboard.doMove(*move);
+				std::swap(activePlayer_, waitingPlayer_);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	BoardState getBoardState() const override {
+		BoardState bs;
+		for (auto const& piece : chessboard.getPieces())
+			bs.push_back({ piece->getType(), piece->getPosition().toString() });
+		return bs;
 	}
 
 	std::string getWinner() const noexcept {
@@ -193,20 +221,6 @@ public:
 		else if (isThereStalemate())
 			result = "draw";
 		return result;
-	}
-
-	void nextMove(const SimpleMove& nextMove) noexcept {
-		if(!isGameEnded()) {
-			const auto& move = std::find(legalMoves_.begin(), legalMoves_.end(), nextMove);
-			if (move != legalMoves_.end()) {
-				chessboard.doMove(*move);
-				std::swap(activePlayer_, waitingPlayer_);
-			}
-		}
-	}
-
-	auto getPiecesState() const noexcept  {
-		return chessboard.getPieces().getPiecesCopy();
 	}
 
 	bool isGameEnded() noexcept {

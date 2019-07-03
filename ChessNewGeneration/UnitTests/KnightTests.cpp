@@ -27,12 +27,3 @@ TEST_F(KnightTests, invalidMoves) {
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("G4")));
 	EXPECT_FALSE(knight.isConsistentWithMoveRules(Position("H8")));
 }
-
-TEST_F(KnightTests, attackRulesUsesMoveRules) {
-	Knight knight(Position("C4"));
-	const Position newPosition("B3");
-
-	//WHEN_CALLED(knight.isConsistentWithMoveRules(newPosition)).Return(true);
-	knight.isConsistentWithAttackRules(newPosition);
-	//ASSERT_WAS_CALLED(knight.isConsistentWithMoveRules(newPosition));
-}
