@@ -1,16 +1,16 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>images/king_black.svg</file>
-    <file>images/queen_black.svg</file>
-	<file>images/rook_black.svg</file>
-	<file>images/bishop_black.svg</file>
-    <file>images/knight_black.svg</file>
-    <file>images/pawn_black.svg</file>
-	<file>images/king_white.svg</file>
-    <file>images/queen_white.svg</file>
-	<file>images/rook_white.svg</file>
-	<file>images/bishop_white.svg</file>
-    <file>images/knight_white.svg</file>
-    <file>images/pawn_white.svg</file>
+    <file>Images/king_black.svg</file>
+    <file>Images/queen_black.svg</file>
+	<file>Images/rook_black.svg</file>
+	<file>Images/bishop_black.svg</file>
+    <file>Images/knight_black.svg</file>
+    <file>Images/pawn_black.svg</file>
+	<file>Images/king_white.svg</file>
+    <file>Images/queen_white.svg</file>
+	<file>Images/rook_white.svg</file>
+	<file>Images/bishop_white.svg</file>
+    <file>Images/knight_white.svg</file>
+    <file>Images/pawn_white.svg</file>
 </qresource>
 </RCC>

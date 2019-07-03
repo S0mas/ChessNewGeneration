@@ -16,29 +16,29 @@ class ChessboardGUI : public QWidget {
 
 	QIcon loadImage(const PieceType piece) {
 		if(piece == PieceType::WhiteKing)
-			return QIcon("images\\king_white.svg");
+			return QIcon(":Images/king_white.svg");
 		if (piece == PieceType::WhiteQueen)
-			return QIcon("images\\queen_white.svg");
+			return QIcon(":Images/queen_white.svg");
 		if (piece == PieceType::WhiteRook)
-			return QIcon("images\\rook_white.svg");
+			return QIcon(":Images/rook_white.svg");
 		if (piece == PieceType::WhiteBishop)
-			return QIcon("images\\bishop_white.svg");
+			return QIcon(":Images/bishop_white.svg");
 		if (piece == PieceType::WhiteKnight)
-			return QIcon("images\\knight_white.svg");
+			return QIcon(":Images/knight_white.svg");
 		if (piece == PieceType::WhitePawn)
-			return QIcon("images\\pawn_white.svg");
+			return QIcon(":Images/pawn_white.svg");
 		if (piece == PieceType::BlackKing)
-			return QIcon("images\\king_black.svg");
+			return QIcon(":Images/king_black.svg");
 		if (piece == PieceType::BlackQueen)
-			return QIcon("images\\queen_black.svg");
+			return QIcon(":Images/queen_black.svg");
 		if (piece == PieceType::BlackRook)
-			return QIcon("images\\rook_black.svg");
+			return QIcon(":Images/rook_black.svg");
 		if (piece == PieceType::BlackBishop)
-			return QIcon("images\\bishop_black.svg");
+			return QIcon(":Images/bishop_black.svg");
 		if (piece == PieceType::BlackKnight)
-			return QIcon("images\\knight_black.svg");
+			return QIcon(":Images/knight_black.svg");
 		if (piece == PieceType::BlackPawn)
-			return QIcon("images\\pawn_black.svg");
+			return QIcon(":Images/pawn_black.svg");
 		return QIcon();
 	}
 public:
