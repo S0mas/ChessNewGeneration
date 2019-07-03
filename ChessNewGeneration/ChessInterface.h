@@ -28,6 +28,7 @@ using BoardState = std::vector<std::pair<PieceType, std::string>>;
 
 class ChessInterface {
 public:
+	virtual ~ChessInterface() {}
 	virtual GameStatus getGameStatus() const = 0;
 	virtual BoardState getBoardState() const = 0;
 	virtual bool undoMove() = 0;

@@ -58,12 +58,8 @@ public:
 		}
 		gLayout->setSpacing(0);
 		connect(SingletonMove::getSingleton(), SIGNAL(moveIsReady()), this, SLOT(sendMove()));
-		layout = gLayout;
+		setLayout(gLayout);
 		update();
-	}
-
-	QLayout* getLayout() {
-		return layout;
 	}
 
 	void clear() {
