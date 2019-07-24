@@ -212,6 +212,16 @@ public:
 		return true;
 	}
 
+    std::unique_ptr<Piece> promote(const ChessInterface::PieceType& type) const noexcept {
+        if(type == ChessInterface::WhiteQueen || type == ChessInterface::BlackQueen)
+            return std::make_unique<Queen>(getPosition(),getOwner());
+        if(type == ChessInterface::WhiteRook || type == ChessInterface::BlackRook)
+            return std::make_unique<Rook>(getPosition(),getOwner());
+        if(type == ChessInterface::WhiteBishop || type == ChessInterface::BlackBishop)
+            return std::make_unique<Bishop>(getPosition(),getOwner());
+        return std::make_unique<Knight>(getPosition(),getOwner());
+    }
+
 	std::unique_ptr<Piece> clone() const final {
 		return std::make_unique<Pawn>(*this);
 	}

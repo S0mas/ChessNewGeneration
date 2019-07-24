@@ -33,6 +33,12 @@ public:
 		});
 	}
 
+    std::array<std::unique_ptr<Piece>, 32>::iterator getPieceByPosition(const Position& position) noexcept {
+        return std::find_if(pieces_.begin(), pieces_.end(), [&position](auto& piece) {
+            return piece->isAlive() && piece->getPosition() == position;
+        });
+    }
+
 	auto notFound() const noexcept {
 		return pieces_.end();
 	}

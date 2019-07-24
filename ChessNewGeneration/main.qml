@@ -5,6 +5,13 @@ Window {
     width: height
     height: 640
 
+    Connections {
+        target: game
+        onPromotion: {
+
+        }
+    }
+
     Grid {
         columns: 8
         rows: 8

@@ -54,6 +54,13 @@ public:
 		return pieces_.end();
 	}
 
+    auto begin() noexcept {
+        return pieces_.begin();
+    }
+    auto end() noexcept {
+        return pieces_.end();
+    }
+
 	auto getPiecesCopy() const noexcept {
 		std::vector<std::unique_ptr<Piece>> piecesCopy;
 		piecesCopy.reserve(32);

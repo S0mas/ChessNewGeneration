@@ -200,12 +200,26 @@ public:
 			const auto& move = std::find(legalMoves_.begin(), legalMoves_.end(), nextMove);
 			if (move != legalMoves_.end()) {
 				chessboard.doMove(*move);
+                if((*move).type == Move::Promotion)
+                    emit promotion();
 				std::swap(activePlayer_, waitingPlayer_);
 				return true;
 			}
 		}
 		return false;
 	}
+
+    bool promote(const PieceType& type) override {
+        if(chessboard.wasThereAnyMove()) {
+            auto lastMove = chessboard.getLastMove();
+            if(lastMove.type == Move::Promotion && lastMove.getSubject()->isPawn()){
+                auto piece = chessboard.getPieceByPosition(lastMove.getSimpleMove().destination_);
+                piece->reset(dynamic_cast<Pawn*>(piece->get())->promote(type).release());
+                return true;
+            }
+        }
+        return false;
+    }
 
     PieceType getPieceTypeByPosition(const QString& position) const noexcept override {
         auto piece = chessboard.getPieceByPosition(Position(position.toStdString()));

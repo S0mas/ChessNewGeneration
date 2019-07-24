@@ -36,7 +36,11 @@ public:
     Q_INVOKABLE virtual PieceType getPieceTypeByPosition(const QString& position) const noexcept = 0;
     Q_INVOKABLE virtual bool undoMove() = 0;
     Q_INVOKABLE virtual bool move(const QString& originPosition, const QString& destinationPosition) = 0;
+    Q_INVOKABLE virtual bool promote(const PieceType& type) = 0;
     Q_INVOKABLE void reset() {
 		while (undoMove()) {};
 	}
+
+signals:
+    void promotion();
 };
