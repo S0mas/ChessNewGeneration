@@ -1,39 +1,42 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <QObject>
+#include <QString>
 
-enum class PieceType {
-	WhiteKing,
-	WhiteQueen,
-	WhiteRook,
-	WhiteBishop,
-	WhiteKnight,
-	WhitePawn,
-	BlackKing,
-	BlackQueen,
-	BlackRook,
-	BlackBishop,
-	BlackKnight,
-	BlackPawn
-};
-
-enum class GameStatus {
-	IN_PROGRESS,
-	WHITE_WON,
-	BLACK_WON,
-	DRAW
-};
-
-using BoardState = std::vector<std::pair<PieceType, std::string>>;
-
-class ChessInterface {
+class ChessInterface : public QObject {
+    Q_OBJECT
 public:
-	virtual ~ChessInterface() {}
-	virtual GameStatus getGameStatus() const = 0;
-	virtual BoardState getBoardState() const = 0;
-	virtual bool undoMove() = 0;
-	virtual bool move(const std::string& originPosition, const std::string& destinationPosition) = 0;
-	void reset() {
+    enum PieceType {
+        WhiteKing,
+        WhiteQueen,
+        WhiteRook,
+        WhiteBishop,
+        WhiteKnight,
+        WhitePawn,
+        BlackKing,
+        BlackQueen,
+        BlackRook,
+        BlackBishop,
+        BlackKnight,
+        BlackPawn,
+        Empty
+    };
+
+    enum GameStatus {
+        IN_PROGRESS,
+        WHITE_WON,
+        BLACK_WON,
+        DRAW
+    };
+    Q_ENUMS(PieceType)
+    Q_ENUMS(GameStatus)
+    Q_INVOKABLE virtual ~ChessInterface() {}
+    Q_INVOKABLE virtual GameStatus getGameStatus() const = 0;
+    Q_INVOKABLE virtual PieceType getPieceTypeByPosition(const QString& position) const noexcept = 0;
+    Q_INVOKABLE virtual bool undoMove() = 0;
+    Q_INVOKABLE virtual bool move(const QString& originPosition, const QString& destinationPosition) = 0;
+    Q_INVOKABLE void reset() {
 		while (undoMove()) {};
 	}
 };

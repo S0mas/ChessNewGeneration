@@ -173,7 +173,7 @@ public:
 		activePlayer_ = Player::White;
 		waitingPlayer_ = Player::Black;
 	}
-	virtual ~ChessGame() = default;
+    ~ChessGame() override = default;
 
 	void resetGame() {
 		while (chessboard.wasThereAnyMove())
@@ -194,8 +194,8 @@ public:
 			return false;
 	}
 
-	bool move(const std::string& originPosition, const std::string& destinationPosition) override {
-		auto nextMove = SimpleMove(Position(originPosition), Position(destinationPosition));
+    bool move(const QString& originPosition, const QString& destinationPosition) override {
+        auto nextMove = SimpleMove(Position(originPosition.toStdString()), Position(destinationPosition.toStdString()));
 		if(!isGameEnded()) {
 			const auto& move = std::find(legalMoves_.begin(), legalMoves_.end(), nextMove);
 			if (move != legalMoves_.end()) {
@@ -207,20 +207,19 @@ public:
 		return false;
 	}
 
-	BoardState getBoardState() const override {
-		BoardState bs;
-		for (auto const& piece : chessboard.getPieces())
-			bs.push_back({ piece->getType(), piece->getPosition().toString() });
-		return bs;
+    PieceType getPieceTypeByPosition(const QString& position) const noexcept override {
+        auto piece = chessboard.getPieceByPosition(Position(position.toStdString()));
+        if(piece == chessboard.notFound())
+            return Empty;
+        return (*piece)->getType();
 	}
 
-	std::string getWinner() const noexcept {
-		auto result = "game in progress";
+    QString getWinner() const noexcept {
 		if (isThereCheckmate())
-			result = waitingPlayer_ == Player::White ? "white" : "black";
+            return waitingPlayer_ == Player::White ? "white" : "black";
 		else if (isThereStalemate())
-			result = "draw";
-		return result;
+            return "draw";
+        return "game in progress";
 	}
 
 	bool isGameEnded() noexcept {

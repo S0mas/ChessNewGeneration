@@ -3,6 +3,7 @@
 #include "Position.h"
 #include "Player.h"
 #include <vector>
+#include <memory>
 
 class Piece {
 protected:
@@ -46,7 +47,7 @@ public:
 		return live;
 	}
 
-	virtual PieceType getType() const noexcept = 0;
+    virtual ChessInterface::PieceType getType() const noexcept = 0;
 
 	virtual void setPosition(const Position& destination) noexcept {
 		position_ = destination;
@@ -105,8 +106,8 @@ public:
 		return std::make_unique<King>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhiteKing : PieceType::BlackKing;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhiteKing : ChessInterface::PieceType::BlackKing;
 	}
 };
 
@@ -122,8 +123,8 @@ public:
 		return std::make_unique<Queen>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhiteQueen : PieceType::BlackQueen;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhiteQueen : ChessInterface::PieceType::BlackQueen;
 	}
 };
 
@@ -154,8 +155,8 @@ public:
 		return std::make_unique<Rook>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhiteRook : PieceType::BlackRook;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhiteRook : ChessInterface::PieceType::BlackRook;
 	}
 };
 
@@ -170,8 +171,8 @@ public:
 		return std::make_unique<Bishop>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhiteBishop : PieceType::BlackBishop;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhiteBishop : ChessInterface::PieceType::BlackBishop;
 	}
 };
 
@@ -191,8 +192,8 @@ public:
 		return std::make_unique<Knight>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhiteKnight : PieceType::BlackKnight;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhiteKnight : ChessInterface::PieceType::BlackKnight;
 	}
 };
 
@@ -215,7 +216,7 @@ public:
 		return std::make_unique<Pawn>(*this);
 	}
 
-	virtual PieceType getType() const noexcept {
-		return getOwner() == Player::White ? PieceType::WhitePawn : PieceType::BlackPawn;
+    virtual ChessInterface::PieceType getType() const noexcept {
+        return getOwner() == Player::White ? ChessInterface::PieceType::WhitePawn : ChessInterface::PieceType::BlackPawn;
 	}
 };
