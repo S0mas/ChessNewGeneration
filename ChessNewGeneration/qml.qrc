@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>PromotionDialog.qml</file>
+        <file>PromotionRect.qml</file>
+        <file>Chessboard.qml</file>
     </qresource>
 </RCC>

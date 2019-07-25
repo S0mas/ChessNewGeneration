@@ -38,3 +38,5 @@ HEADERS += \
     Piece.h \
     Player.h \
     Position.h
+
+DISTFILES +=
